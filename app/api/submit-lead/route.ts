@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getPool } from '@/lib/db';
+import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT } from '@/lib/booking';
 
 interface LeadData {
   name: string;
@@ -23,7 +25,22 @@ const escapeHtml = (s: string): string =>
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
+async function releaseSlot(bookingDate: string, bookingSlot: string) {
+  try {
+    await getPool()?.query(
+      'UPDATE reporting.hprime_tx_slots SET cnt = GREATEST(cnt - 1, 0), updated_at = now() WHERE booking_date = $1 AND time_slot = $2',
+      [bookingDate, bookingSlot]
+    );
+  } catch (error) {
+    console.error('[SLOTS] release failed:', error);
+  }
+}
+
 export async function POST(request: NextRequest) {
+  let slotReserved = false;
+  let bookingDate = '';
+  let bookingSlot = '';
+
   try {
     const data: LeadData = await request.json();
 
@@ -43,6 +60,37 @@ export async function POST(request: NextRequest) {
         { error: 'Server configuration error' },
         { status: 500 }
       );
+    }
+
+    // Slot capacity control: atomically reserve a place in the requested slot.
+    // Fails open on any DB problem — a lead must never be lost to the counter.
+    bookingDate = data.preferredDate || '';
+    bookingSlot = data.preferredTimeSlot || '';
+    const validBooking =
+      /^\d{4}-\d{2}-\d{2}$/.test(bookingDate) &&
+      (TIME_SLOTS as readonly string[]).includes(bookingSlot);
+
+    if (validBooking) {
+      try {
+        const pool = getPool();
+        if (pool) {
+          const { rows } = await pool.query(
+            `INSERT INTO reporting.hprime_tx_slots (booking_date, time_slot, cnt)
+             VALUES ($1, $2, 1)
+             ON CONFLICT (booking_date, time_slot)
+             DO UPDATE SET cnt = reporting.hprime_tx_slots.cnt + 1, updated_at = now()
+             WHERE reporting.hprime_tx_slots.cnt < $3
+             RETURNING cnt`,
+            [bookingDate, bookingSlot, MAX_BOOKINGS_PER_SLOT]
+          );
+          if (rows.length === 0) {
+            return NextResponse.json({ error: 'slot_full' }, { status: 409 });
+          }
+          slotReserved = true;
+        }
+      } catch (error) {
+        console.error('[SLOTS] capacity check failed, failing open:', error);
+      }
     }
 
     const sourceUrl = request.headers.get('referer') || 'unknown';
@@ -166,6 +214,7 @@ export async function POST(request: NextRequest) {
     if (!tgRes.ok) {
       const body = await tgRes.text();
       console.error('[TELEGRAM] sendMessage failed:', tgRes.status, body);
+      if (slotReserved) await releaseSlot(bookingDate, bookingSlot);
       return NextResponse.json(
         { error: 'Notification failed' },
         { status: 500 }
@@ -178,6 +227,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Lead submission error:', error);
+    if (slotReserved) await releaseSlot(bookingDate, bookingSlot);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

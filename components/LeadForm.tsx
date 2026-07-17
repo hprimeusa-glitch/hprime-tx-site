@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PatternFormat } from 'react-number-format';
+import { TIME_SLOTS } from '@/lib/booking';
 
 const formSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -43,7 +44,9 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'slot_full'>('idle');
+  const [slotAvailability, setSlotAvailability] = useState<Record<string, boolean> | null>(null);
+  const [availabilityRefresh, setAvailabilityRefresh] = useState(0);
 
   const {
     register,
@@ -52,10 +55,32 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
     reset,
     control,
     trigger,
+    watch,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: 'onTouched',
   });
+
+  const selectedDate = watch('preferredDate');
+
+  useEffect(() => {
+    if (!selectedDate || !/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
+      setSlotAvailability(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/slot-availability?date=${selectedDate}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (!cancelled) setSlotAvailability(json?.availability ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setSlotAvailability(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedDate, availabilityRefresh]);
 
   const goToStep2 = async () => {
     const valid = await trigger(STEP_1_FIELDS);
@@ -127,6 +152,9 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
           time: data.preferredTimeSlot,
         });
         router.push(`/thank-you-page?${tyParams.toString()}`);
+      } else if (response.status === 409) {
+        setSubmitStatus('slot_full');
+        setAvailabilityRefresh((k) => k + 1);
       } else {
         setSubmitStatus('error');
       }
@@ -283,10 +311,14 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
             defaultValue=""
           >
             <option value="" disabled>Select…</option>
-            <option value="7 AM – 10 AM">7 AM – 10 AM</option>
-            <option value="10 AM – 1 PM">10 AM – 1 PM</option>
-            <option value="1 PM – 4 PM">1 PM – 4 PM</option>
-            <option value="4 PM – 7 PM">4 PM – 7 PM</option>
+            {TIME_SLOTS.map((slot) => {
+              const isFull = slotAvailability ? slotAvailability[slot] === false : false;
+              return (
+                <option key={slot} value={slot} disabled={isFull}>
+                  {slot}{isFull ? ' — fully booked' : ''}
+                </option>
+              );
+            })}
           </select>
           {errors.preferredTimeSlot && <p className={errorCls}>{errors.preferredTimeSlot.message}</p>}
         </div>
@@ -313,6 +345,12 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
       {submitStatus === 'error' && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-sm">
           Something went wrong. Please try again or call us directly.
+        </div>
+      )}
+
+      {submitStatus === 'slot_full' && (
+        <div className="bg-amber-100 border border-amber-400 text-amber-800 px-3 py-2 rounded text-sm">
+          Sorry, this time slot is already fully booked for the selected date. Please pick another time slot or date.
         </div>
       )}
     </div>
