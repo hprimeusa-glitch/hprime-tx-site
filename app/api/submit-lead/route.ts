@@ -1,0 +1,186 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+interface LeadData {
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  phone: string;
+  email: string;
+  street?: string;
+  apartment?: string;
+  city?: string;
+  zipCode?: string;
+  appliance?: string;
+  preferredDate?: string;
+  preferredTimeSlot?: string;
+  attribution?: Record<string, string>;
+  submission_page?: string;
+}
+
+const escapeHtml = (s: string): string =>
+  String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+export async function POST(request: NextRequest) {
+  try {
+    const data: LeadData = await request.json();
+
+    if (!data.name || !data.phone || !data.email) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    if (!botToken || !chatId) {
+      console.error('[TELEGRAM] Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env vars');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const sourceUrl = request.headers.get('referer') || 'unknown';
+    const timestamp = new Date().toLocaleString('en-US', {
+      timeZone: 'America/Chicago',
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
+
+    const phoneDigits = data.phone.replace(/\D/g, '');
+    const phoneFormatted =
+      phoneDigits.length === 10
+        ? `(${phoneDigits.slice(0, 3)}) ${phoneDigits.slice(3, 6)}-${phoneDigits.slice(6)}`
+        : data.phone;
+
+    const addressParts: string[] = [];
+    if (data.street) addressParts.push(data.street);
+    if (data.apartment) addressParts.push(data.apartment);
+    if (data.city) {
+      addressParts.push(`${data.city}, TX ${data.zipCode || ''}`.trim());
+    }
+    const addressLine = addressParts.join(', ');
+
+    const lines: string[] = [
+      '🔔 <b>New Appliance Repair Lead (Texas)</b>',
+      '',
+      `👤 <b>Name:</b> ${escapeHtml(data.name)}`,
+      `📞 <b>Phone:</b> <a href="tel:+1${phoneDigits}">${escapeHtml(phoneFormatted)}</a>`,
+      `📧 <b>Email:</b> ${escapeHtml(data.email)}`,
+    ];
+    if (addressLine) {
+      lines.push(`📍 <b>Address:</b> ${escapeHtml(addressLine)}`);
+    }
+    if (data.appliance) {
+      lines.push(`🔧 <b>Appliance:</b> ${escapeHtml(data.appliance)}`);
+    }
+
+    if (data.preferredDate || data.preferredTimeSlot) {
+      let when = '';
+      if (data.preferredDate) {
+        const d = new Date(data.preferredDate + 'T00:00:00');
+        when = isNaN(d.getTime())
+          ? data.preferredDate
+          : d.toLocaleDateString('en-US', {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            });
+      }
+      if (data.preferredTimeSlot) {
+        when = when ? `${when} · ${data.preferredTimeSlot}` : data.preferredTimeSlot;
+      }
+      lines.push(`📅 <b>Preferred:</b> ${escapeHtml(when)}`);
+    }
+
+    const attribution = data.attribution || {};
+    const utmSource = attribution.utm_source || '';
+    const utmMedium = attribution.utm_medium || '';
+    const utmCampaign = attribution.utm_campaign || '';
+    const utmContent = attribution.utm_content || '';
+    const utmTerm = attribution.utm_term || '';
+    const gclid = attribution.gclid || '';
+    const gbraid = attribution.gbraid || '';
+    const wbraid = attribution.wbraid || '';
+    const fbclid = attribution.fbclid || '';
+    const msclkid = attribution.msclkid || '';
+    const landingPage = attribution.landing_page || '';
+    const landingReferrer = attribution.landing_referrer || '';
+
+    const hasAttribution =
+      utmSource || utmMedium || utmCampaign || utmContent || utmTerm ||
+      gclid || gbraid || wbraid || fbclid || msclkid;
+
+    lines.push('');
+    lines.push('━━━━━━━━━━━━━━━━━');
+    lines.push('📊 <b>Attribution</b>');
+
+    if (hasAttribution) {
+      const trafficLabel = utmSource
+        ? `${utmSource}${utmMedium ? ' / ' + utmMedium : ''}`
+        : gclid
+          ? 'google ads (gclid)'
+          : fbclid
+            ? 'facebook (fbclid)'
+            : msclkid
+              ? 'microsoft ads (msclkid)'
+              : 'paid (untagged)';
+      lines.push(`📣 <b>Source:</b> ${escapeHtml(trafficLabel)}`);
+      if (utmCampaign) lines.push(`🎯 <b>Campaign:</b> ${escapeHtml(utmCampaign)}`);
+      if (utmContent) lines.push(`🧩 <b>Content:</b> ${escapeHtml(utmContent)}`);
+      if (utmTerm) lines.push(`🔑 <b>Term:</b> ${escapeHtml(utmTerm)}`);
+      if (gclid) lines.push(`🆔 <b>gclid:</b> <code>${escapeHtml(gclid)}</code>`);
+      if (gbraid) lines.push(`🆔 <b>gbraid:</b> <code>${escapeHtml(gbraid)}</code>`);
+      if (wbraid) lines.push(`🆔 <b>wbraid:</b> <code>${escapeHtml(wbraid)}</code>`);
+      if (fbclid) lines.push(`🆔 <b>fbclid:</b> <code>${escapeHtml(fbclid)}</code>`);
+      if (msclkid) lines.push(`🆔 <b>msclkid:</b> <code>${escapeHtml(msclkid)}</code>`);
+    } else {
+      lines.push(`📣 <b>Source:</b> direct / organic`);
+    }
+    if (landingPage) lines.push(`🛬 <b>Landing:</b> ${escapeHtml(landingPage)}`);
+    if (landingReferrer) lines.push(`↩️ <b>Referrer:</b> ${escapeHtml(landingReferrer)}`);
+
+    lines.push('');
+    lines.push(`🌐 <b>Submitted from:</b> ${escapeHtml(data.submission_page || sourceUrl)}`);
+    lines.push(`🕐 <b>Time:</b> ${escapeHtml(timestamp)} (Fort Worth)`);
+
+    const text = lines.join('\n');
+
+    const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true,
+      }),
+    });
+
+    if (!tgRes.ok) {
+      const body = await tgRes.text();
+      console.error('[TELEGRAM] sendMessage failed:', tgRes.status, body);
+      return NextResponse.json(
+        { error: 'Notification failed' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Lead submitted successfully',
+    });
+  } catch (error) {
+    console.error('Lead submission error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
