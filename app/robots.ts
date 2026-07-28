@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
+  // NOTE: /_next/ must stay crawlable. Every image is served through /_next/image
+  // and the CSS/JS Google needs to render pages lives under /_next/static.
+  // Blocking it kept images out of Google Images and degraded rendering.
   const baseUrl = 'https://tx.h-prime-co.com';
 
   return {
@@ -11,7 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/keystatic/',
-          '/_next/',
           '/admin/',
           '/test-geo/',
         ],
@@ -24,7 +26,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/keystatic/',
-          '/_next/',
           '/admin/',
         ],
         crawlDelay: 0.5, // Google can crawl faster
@@ -35,7 +36,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/keystatic/',
-          '/_next/',
           '/admin/',
           '/test-geo/',
         ],
