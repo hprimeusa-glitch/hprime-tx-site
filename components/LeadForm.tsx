@@ -8,6 +8,16 @@ import { z } from 'zod';
 import { PatternFormat } from 'react-number-format';
 import { TIME_SLOTS } from '@/lib/booking';
 
+// Texas books Monday–Friday only. A native <input type="date"> can't grey out weekends,
+// so we reject Sat/Sun in validation and show a hint. Parse the Y-M-D parts and build a
+// LOCAL date so the weekday check is timezone-safe (no UTC off-by-one).
+const isWeekend = (val: string): boolean => {
+  const [y, m, d] = val.split('-').map(Number);
+  if (!y || !m || !d) return false;
+  const day = new Date(y, m - 1, d).getDay();
+  return day === 0 || day === 6; // Sunday or Saturday
+};
+
 const formSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
@@ -21,7 +31,12 @@ const formSchema = z.object({
   apartment: z.string().optional(),
   city: z.string().min(2, 'City is required'),
   zipCode: z.string().min(5, 'Please enter a valid 5-digit ZIP code'),
-  preferredDate: z.string().min(1, 'Please select a preferred date'),
+  preferredDate: z
+    .string()
+    .min(1, 'Please select a preferred date')
+    .refine((val) => !isWeekend(val), {
+      message: "We're open Monday through Friday — please choose a weekday.",
+    }),
   preferredTimeSlot: z.string().min(1, 'Please select a time slot'),
 });
 
@@ -300,6 +315,7 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
             min={todayLocalISO()}
             className={inputCls}
           />
+          <p className="text-gray-500 text-xs mt-0.5">Open Monday–Friday, 8 AM – 6 PM.</p>
           {errors.preferredDate && <p className={errorCls}>{errors.preferredDate.message}</p>}
         </div>
         <div>
