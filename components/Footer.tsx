@@ -92,11 +92,16 @@ export default function Footer() {
             <p className="text-sm mb-4">Same-day service available</p>
             <a
               href={`tel:${PHONE_NUMBER}`}
-              className="text-gray-900 px-6 py-3 rounded-lg transition font-semibold inline-block mb-6 text-center"
+              className="text-gray-900 px-6 py-3 rounded-lg transition font-semibold inline-block mb-3 text-center"
               style={{ backgroundColor: '#FFC704' }}
             >
               {PHONE_DISPLAY}
             </a>
+            <p className="mb-6">
+              <Link href="/book" className="hover:text-white transition text-sm font-semibold">
+                Book online →
+              </Link>
+            </p>
 
             <h4 className="text-white font-semibold mb-3 mt-6">Legal</h4>
             <ul className="space-y-2 text-xs">
