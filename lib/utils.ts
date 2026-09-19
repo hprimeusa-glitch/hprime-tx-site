@@ -18,7 +18,7 @@ export function slugToTitle(slug: string): string {
 
 export const PHONE_NUMBER = '+18177996313';
 export const PHONE_DISPLAY = '(817) 799-6313';
-export const BUSINESS_EMAIL = 'h.prime.usa@gmail.com';
+export const BUSINESS_EMAIL = 'help@h-prime-co.com';
 export const BUSINESS_NAME = 'H-Prime Appliance Repair Services';
 export const BUSINESS_ADDRESS = 'Fort Worth, TX';
 // Live GBP values (checked 2026-07-10, place_id ChIJ6dWdU5D8_WgRf-crfXWkxY8)
