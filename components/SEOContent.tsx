@@ -58,8 +58,7 @@ function renderContent({ city, appliance, brand, county }: any) {
         <div className="text-gray-700 space-y-4">
           <p className="text-base md:text-lg leading-relaxed">
             Is your {appliance.toLowerCase()}{isBuiltInOven ? ` (${builtInOvenAliases})` : ''} acting up in {city}? <strong>H-Prime Appliance Repair Services</strong> provides expert {appliance.toLowerCase()} 
-            repair for all major brands throughout {city} and the surrounding Fort Worth Metro area. With over 20 years of experience, 
-            our certified technicians can diagnose and repair your {appliance.toLowerCase()} quickly and efficiently.
+            repair for all major brands throughout {city} and the surrounding Fort Worth Metro area. Our certified technicians can diagnose and repair your {appliance.toLowerCase()} quickly and efficiently.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed">
@@ -163,8 +162,7 @@ function renderContent({ city, appliance, brand, county }: any) {
         
         <div className="text-gray-700 space-y-4">
           <p className="text-base md:text-lg leading-relaxed">
-            <strong>H-Prime Appliance Repair Services</strong> is Fort Worth Metro area's trusted source for {brand} appliance repair. With over 20 years of experience 
-            and experienced technicians, we specialize in servicing all {brand} appliance models. From routine maintenance to 
+            <strong>H-Prime Appliance Repair Services</strong> is Fort Worth Metro area's trusted source for {brand} appliance repair. With experienced technicians, we specialize in servicing all {brand} appliance models. From routine maintenance to 
             complex repairs, we're the {brand} experts you can count on throughout Fort Worth and surrounding Texas communities.
           </p>
           

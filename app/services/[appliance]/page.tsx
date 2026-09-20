@@ -110,7 +110,7 @@ export default async function ApplianceRepairPage({ params }: PageProps) {
                   <CheckCircle className="w-10 h-10 text-orange-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">20+ Years Experience</h3>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Certified Technicians</h3>
               <p className="text-gray-600">
                 Repairing Fort Worth Metro area's kitchen and laundry appliances. Certified technicians.
               </p>

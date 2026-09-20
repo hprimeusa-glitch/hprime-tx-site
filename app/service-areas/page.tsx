@@ -62,7 +62,7 @@ export default function ServiceAreasPage() {
             </h2>
             <div className="text-gray-700 space-y-4">
               <p className="text-base md:text-lg leading-relaxed">
-                For over 20 years, <strong>H-Prime Appliance Repair Services</strong> has been the trusted choice for appliance 
+                <strong>H-Prime Appliance Repair Services</strong> is a trusted choice for appliance 
                 repair in Fort Worth Metro area. Our technicians provide same-day service to homes and businesses 
                 in Fort Worth, Arapahoe, Jefferson, Adams, Douglas, and Boulder counties.
               </p>

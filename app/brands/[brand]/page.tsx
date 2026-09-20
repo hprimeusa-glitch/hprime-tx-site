@@ -137,8 +137,8 @@ export default async function BrandRepairPage({ params }: PageProps) {
                   <Shield className="w-10 h-10 text-orange-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Genuine Parts</h3>
-              <p className="text-gray-600">Only authentic {brand.name} replacement parts</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">The Right Parts</h3>
+              <p className="text-gray-600">Parts matched to your {brand.name} model</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
               <div className="flex justify-center mb-4">

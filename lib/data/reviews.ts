@@ -1,5 +1,7 @@
-// H-Prime Appliance Repair - Customer Reviews
-// Placeholder reviews for Fort Worth area
+// H-Prime Appliance Repair - reviews copied verbatim from the Google Business Profile
+// Pulled 2026-09-20 (4.9 / 218 reviews). Texas has no profile of its own, so these
+// are the company's Denver reviews, with the author names exactly as published on Google.
+// Never add an entry that is not in the profile.
 
 export interface Review {
   author: string;
@@ -11,57 +13,57 @@ export interface Review {
 
 export const reviews: Review[] = [
   {
-    author: 'Michelle K.',
-    text: 'Our Samsung refrigerator stopped cooling overnight. Called H-Prime and they sent someone out same day. The technician was professional, explained everything clearly, and had us back up and running in under 2 hours. Highly recommend!',
+    author: 'Jill Picard',
+    text: 'Roman was responsive, communicated very well, found the issue immediately and only had to wait for parts.  Once he got them he actually swung by on a Sat and got me back up and running.  Appreciated that!  It didn’t take long at all to repair - but parts took a week.',
     rating: 5,
-    date: '2 weeks ago'
+    date: 'September 2026'
   },
   {
-    author: 'David R.',
-    text: 'Washer was making a horrible noise. The tech arrived on time, diagnosed the issue quickly (worn bearing), and completed the repair efficiently. Very knowledgeable and reasonably priced. Will definitely use them again for any appliance issues.',
+    author: 'Haley Talley',
+    text: 'Vadzim was wonderful! He was super knowledgeable in diagnosing our problem. Not pushy and very respectful.',
     rating: 5,
-    date: '1 month ago'
+    date: 'September 2026'
   },
   {
-    author: 'Sarah L.',
-    text: 'Had an issue with our Bosch dishwasher not draining. H-Prime came out the next day, fixed it within an hour, and cleaned up everything. The technician was courteous and explained what caused the problem. Great service in the Fort Worth area!',
+    author: 'Mike Zapor',
+    text: 'Tom brought a new control board, which fixed our washer, and a new spring assembly, which fixed the door on our old dishwaher.  He was punctual and worked quickly to make the repairs. While at the same time he was pleasant and friendly.',
     rating: 5,
-    date: '1 month ago'
+    date: 'September 2026'
   },
   {
-    author: 'James T.',
-    text: 'Our LG dryer stopped heating. Called H-Prime Appliance Repair and they were able to fit us in the same day. The repair was done professionally and the price was exactly what they quoted over the phone. Very satisfied with the service.',
+    author: 'Christina Winslow',
+    text: 'Really helped put my oven back together again when cleaning crew had taken it apart. Great working with this company!',
     rating: 5,
-    date: '2 months ago'
+    date: 'September 2026'
   },
   {
-    author: 'Amanda W.',
-    text: 'Excellent service! Our Whirlpool refrigerator was leaking water. The technician arrived within the scheduled window, quickly identified the problem, and had the parts needed in his truck. Fixed it on the spot. Very pleased with H-Prime!',
+    author: 'Barbara Snook',
+    text: 'The technican arrived exactly when they said he would - same day service. He let us know what the problem was and the estimate for repairs in a very short time. It was well worth the charge for the consultation. We were very pleased!',
     rating: 5,
-    date: '2 months ago'
+    date: 'August 2026'
   },
   {
-    author: 'Robert J.',
-    text: 'Called them for our Maytag washer that wouldn\'t spin. They came out same day, tech was friendly and professional. Fixed the issue and gave us maintenance tips to prevent future problems. Fair pricing too. Would recommend to anyone in Fort Worth!',
+    author: 'Tash Varona',
+    text: 'Taras was extremely kind, helpful and efficient in repairing my washing machine.  He spent the time to teach me how to do some basic maintenance which I really appreciated.',
     rating: 5,
-    date: '3 months ago'
+    date: 'August 2026'
   },
   {
-    author: 'Lisa P.',
-    text: 'Our KitchenAid oven stopped working right before a big dinner party. H-Prime saved the day! Same-day service, professional technician, and reasonable rates. EPA certified and Whirlpool trained — these guys know their stuff.',
+    author: 'Roger Carolina',
+    text: 'This company was very good, they came right on time and were very efficient,  Dima was very transparent and quick. Thumbs up.',
     rating: 5,
-    date: '4 months ago'
+    date: 'August 2026'
   },
   {
-    author: 'Chris M.',
-    text: 'Had them fix our Sub-Zero wine cooler. Not every company works on high-end brands, but H-Prime handled it perfectly. Professional, on time, and the repair has held up great. Our go-to for all appliance repairs now.',
+    author: 'HOA Le Jardin',
+    text: 'Three other repair services looked at our refrigerator. All of them misdiagnosed its problem. H-Prime  quickly got it right!',
     rating: 5,
-    date: '5 months ago'
+    date: 'August 2026'
   },
   {
-    author: 'Patricia H.',
-    text: 'Very responsive and professional. Our freezer stopped working and they came out within hours. The technician was knowledgeable and explained everything clearly. Repair was done quickly and hasn\'t had any issues since. Serving the whole Fort Worth metro area!',
+    author: 'Sarah Poormon',
+    text: 'H-Prime did a great job taking care of our appliance repair needs! They showed up on time, took great care, and later showed us how to maintain our appliance to avoid further repairs.  I highly recommend!',
     rating: 5,
-    date: '6 months ago'
-  }
+    date: 'August 2026'
+  },
 ];
