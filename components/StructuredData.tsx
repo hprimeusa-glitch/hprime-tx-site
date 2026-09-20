@@ -3,7 +3,14 @@
  * Helps Google understand our business, services, and local presence
  */
 
-import { BUSINESS_NAME, PHONE_NUMBER, BUSINESS_EMAIL, BUSINESS_ADDRESS } from '@/lib/utils';
+import {
+  BUSINESS_NAME,
+  PHONE_NUMBER,
+  BUSINESS_EMAIL,
+  BUSINESS_ADDRESS,
+  GOOGLE_RATING,
+  GOOGLE_REVIEW_COUNT,
+} from '@/lib/utils';
 
 interface LocalBusinessProps {
   name?: string;
@@ -106,8 +113,8 @@ export function LocalBusinessSchema({ name, city, county, service }: LocalBusine
     }),
     aggregateRating: {
       '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      reviewCount: '47',
+      ratingValue: GOOGLE_RATING.toString(),
+      reviewCount: GOOGLE_REVIEW_COUNT,
       bestRating: '5',
       worstRating: '1',
     },

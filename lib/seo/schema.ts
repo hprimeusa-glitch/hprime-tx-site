@@ -1,3 +1,5 @@
+import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT } from '@/lib/utils';
+
 interface SchemaParams {
   city?: string;
   appliance?: string;
@@ -9,9 +11,7 @@ const SITE_URL = 'https://tx.h-prime-co.com';
 const BUSINESS_NAME = 'H-Prime Appliance Repair Services';
 const PHONE = '+18177996313';
 const PHONE_DISPLAY = '(817) 799-6313';
-// Live GBP values (checked 2026-07-10, place_id ChIJ6dWdU5D8_WgRf-crfXWkxY8)
-const GOOGLE_RATING = 5.0;
-const REVIEW_COUNT = 184;
+const REVIEW_COUNT = GOOGLE_REVIEW_COUNT;
 
 export function generateLocalBusinessSchema(params: SchemaParams) {
   const { city, appliance, brand, county } = params;

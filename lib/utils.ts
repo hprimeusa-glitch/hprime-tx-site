@@ -21,9 +21,11 @@ export const PHONE_DISPLAY = '(817) 799-6313';
 export const BUSINESS_EMAIL = 'help@h-prime-co.com';
 export const BUSINESS_NAME = 'H-Prime Appliance Repair Services';
 export const BUSINESS_ADDRESS = 'Fort Worth, TX';
-// Live GBP values (checked 2026-07-10, place_id ChIJ6dWdU5D8_WgRf-crfXWkxY8)
-export const GOOGLE_RATING = 5.0;
-export const GOOGLE_REVIEW_COUNT = '180';
+// Live GBP values (checked 2026-09-20, place_id ChIJ6dWdU5D8_WgRf-crfXWkxY8).
+// Texas has no profile of its own: these are the company's Denver GBP figures.
+// Single source of truth: lib/seo/schema.ts imports these, never redeclares them.
+export const GOOGLE_RATING = 4.9;
+export const GOOGLE_REVIEW_COUNT = '218';
 export const GOOGLE_BUSINESS_PROFILE_URL = 'https://search.google.com/local/reviews?placeid=ChIJ6dWdU5D8_WgRf-crfXWkxY8';
 
 
