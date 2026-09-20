@@ -245,11 +245,11 @@ function generateServiceDescription(params: SchemaParams): string {
   const { city, appliance, brand } = params;
 
   if (city && brand && appliance) {
-    return `Professional ${formatBrandName(brand)} ${formatApplianceName(appliance)} repair services in ${formatCityName(city)}, TX. Factory-trained technicians, same-day service, upfront pricing.`;
+    return `Professional ${formatBrandName(brand)} ${formatApplianceName(appliance)} repair services in ${formatCityName(city)}, TX. Same-day service, upfront pricing.`;
   } else if (city && appliance) {
     return `Expert ${formatApplianceName(appliance)} repair in ${formatCityName(city)}, TX. Certified technicians, same-day service, all major brands.`;
   } else if (brand && appliance) {
-    return `Professional ${formatBrandName(brand)} ${formatApplianceName(appliance)} repair in the Fort Worth Metro area. Factory-trained technicians.`;
+    return `Professional ${formatBrandName(brand)} ${formatApplianceName(appliance)} repair in the Fort Worth Metro area. Experienced technicians.`;
   } else {
     return `Professional appliance repair services in the Fort Worth Metro area. All major brands and appliances. Same-day service available.`;
   }

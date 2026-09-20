@@ -112,7 +112,7 @@ export default async function ApplianceRepairPage({ params }: PageProps) {
               </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">20+ Years Experience</h3>
               <p className="text-gray-600">
-                Over two decades repairing Fort Worth Metro area's kitchen and laundry appliances. Factory-trained, certified technicians.
+                Repairing Fort Worth Metro area's kitchen and laundry appliances. Certified technicians.
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md text-center">

@@ -90,7 +90,7 @@ export default async function BrandApplianceRepairPage({ params }: PageProps) {
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">{brand.name} Specialists</h3>
-              <p className="text-gray-600">Factory-trained on all {brand.name} {appliance.name.toLowerCase()} models</p>
+              <p className="text-gray-600">We service all {brand.name} {appliance.name.toLowerCase()} models</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
               <div className="flex justify-center mb-4">

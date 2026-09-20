@@ -27,7 +27,7 @@ export function generatePageMetadata(params: SEOParams): Metadata {
     const cityName = formatCityName(city);
     const brandName = formatBrandName(brand);
     title = `${brandName} Appliance Repair in ${cityName}, CO | Expert ${brandName} Service`;
-    description = `Trusted ${brandName} appliance repair in ${cityName}, CO. Factory-trained technicians for all ${brandName} appliances. Same-day service available. Call ${PHONE} now!`;
+    description = `Trusted ${brandName} appliance repair in ${cityName}, TX. We service all ${brandName} appliances. Same-day service available. Call ${PHONE} now!`;
   } else if (city && appliance) {
     const cityName = formatCityName(city);
     const applianceName = formatApplianceName(appliance);
@@ -37,15 +37,15 @@ export function generatePageMetadata(params: SEOParams): Metadata {
     const brandName = formatBrandName(brand);
     const applianceName = formatApplianceName(appliance);
     title = `${brandName} ${applianceName} Repair Fort Worth Metro | Expert ${brandName} Service`;
-    description = `Professional ${brandName} ${applianceName} repair in the Fort Worth Metro area. Factory-trained technicians, same-day service. Call ${PHONE}!`;
+    description = `Professional ${brandName} ${applianceName} repair in the Fort Worth Metro area. Same-day service, upfront pricing. Call ${PHONE}!`;
   } else if (city) {
     const cityName = formatCityName(city);
     title = `Appliance Repair ${cityName}, CO | Same-Day Service | ${SITE_NAME}`;
-    description = `Professional appliance repair in ${cityName}, CO. Expert service for refrigerators, washers, dryers, ovens & more. Same-day service available. Call ${PHONE}!`;
+    description = `Professional appliance repair in ${cityName}, TX. Expert service for refrigerators, washers, dryers, ovens & more. Same-day service available. Call ${PHONE}!`;
   } else if (brand) {
     const brandName = formatBrandName(brand);
     title = `${brandName} Appliance Repair Fort Worth Metro | ${SITE_NAME}`;
-    description = `Expert ${brandName} appliance repair across the Fort Worth Metro area. Factory-trained technicians, all major ${brandName} appliances. Same-day service. Call ${PHONE}!`;
+    description = `Expert ${brandName} appliance repair across the Fort Worth Metro area. All major ${brandName} appliances. Same-day service. Call ${PHONE}!`;
   } else if (appliance) {
     const applianceName = formatApplianceName(appliance);
     title = `${applianceName} Repair Fort Worth Metro | Same-Day Service | ${SITE_NAME}`;

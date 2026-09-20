@@ -73,7 +73,7 @@ export default async function BrandRepairPage({ params }: PageProps) {
       
       <Hero 
         title={`Expert ${brand.name} Appliance Repair in Fort Worth Metro area`}
-        subtitle="Factory-trained technicians • Genuine parts • Same-day service"
+        subtitle="Experienced technicians • Same-day service • Upfront pricing"
         brand={brand.name}
         brandLogo={brand.logo}
       />
@@ -120,7 +120,7 @@ export default async function BrandRepairPage({ params }: PageProps) {
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">{brand.name} Specialists</h3>
-              <p className="text-gray-600">Factory-trained on all {brand.name} appliances</p>
+              <p className="text-gray-600">We service all {brand.name} appliances</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
               <div className="flex justify-center mb-4">

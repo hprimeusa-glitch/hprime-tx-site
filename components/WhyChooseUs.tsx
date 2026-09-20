@@ -2,7 +2,7 @@ import { CheckCircle, Clock, Users, Wrench } from 'lucide-react';
 import { BUSINESS_NAME } from '@/lib/utils';
 
 const reasons = [
-  { icon: CheckCircle, title: 'Certified Technicians', text: 'Factory-trained technicians for all major appliance brands. Professional service you can trust.' },
+  { icon: CheckCircle, title: 'Certified Technicians', text: 'Experienced technicians for all major appliance brands. Professional service you can trust.' },
   { icon: Clock, title: 'Same-Day Service', text: "Same-day or next-day appointments available. We know you can't wait — we respond fast." },
   { icon: Users, title: 'Trusted by Neighbors', text: 'Fort Worth families trust us for fast, reliable repairs. We fix it right the first time.' },
   { icon: Wrench, title: 'Upfront Pricing', text: 'Transparent pricing with no hidden fees. Fully insured for your peace of mind.' },

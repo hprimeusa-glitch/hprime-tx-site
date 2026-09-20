@@ -90,7 +90,7 @@ export default async function CityBrandApplianceRepairPage({ params }: PageProps
       
       <Hero 
         title={`Same-Day ${brand.name} ${appliance.name} Repair in ${city.name} & Surrounding Areas`}
-        subtitle="Factory-trained technicians • Genuine parts • Professional service"
+        subtitle="Experienced technicians • Same-day service • Upfront pricing"
         city={city.name}
         brand={brand.name}
         brandLogo={brand.logo}
@@ -134,7 +134,7 @@ export default async function CityBrandApplianceRepairPage({ params }: PageProps
                 <span className="text-2xl">🔧</span>
               </div>
               <h3 className="font-semibold text-lg mb-2">{brand.name} Specialists</h3>
-              <p className="text-gray-600">Factory-trained on {brand.name} {appliance.name.toLowerCase()} models</p>
+              <p className="text-gray-600">We service all {brand.name} {appliance.name.toLowerCase()} models</p>
             </div>
             <div className="text-center">
               <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -37,8 +37,8 @@ export function LocalBusinessSchema({ name, city, county, service }: LocalBusine
     name: businessName,
     legalName: 'H-Prime Appliance Repair Services LLC',
     description: service 
-      ? `Professional ${service} service in ${areaServed}. Same-day appointments, 20+ years experience, all major brands.`
-      : `Professional appliance repair service in ${areaServed}. Same-day appointments, 20+ years experience, all major brands.`,
+      ? `Professional ${service} service in ${areaServed}. Same-day appointments for all major brands.`
+      : `Professional appliance repair service in ${areaServed}. Same-day appointments for all major brands.`,
     url: 'https://tx.h-prime-co.com',
     logo: 'https://tx.h-prime-co.com/logo.png',
     image: 'https://tx.h-prime-co.com/og-image.jpg',
