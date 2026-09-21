@@ -7,11 +7,11 @@ export default function Footer() {
 
   const serviceAreas = [
     { name: 'Fort Worth', slug: 'tarrant' },
+    { name: 'Arlington', slug: 'tarrant' },
     { name: 'Keller & Southlake', slug: 'tarrant' },
     { name: 'Hurst, Euless, Bedford', slug: 'tarrant' },
-    { name: 'North Richland Hills', slug: 'tarrant' },
-    { name: 'Haltom City', slug: 'tarrant' },
-    { name: 'Colleyville', slug: 'tarrant' }
+    { name: 'Irving & Grand Prairie', slug: 'dallas' },
+    { name: 'Houston & Bellaire', slug: 'harris' }
   ];
 
   return (
@@ -21,7 +21,7 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <h3 className="text-white text-xl font-bold mb-4">{BUSINESS_NAME}</h3>
-            <p className="text-sm mb-2">Serving Fort Worth Metro Area</p>
+            <p className="text-sm mb-2">Serving Dallas-Fort Worth &amp; Houston</p>
             <p className="mb-2">
               <a href={`tel:${PHONE_NUMBER}`} className="hover:text-white transition">
                 {PHONE_DISPLAY}

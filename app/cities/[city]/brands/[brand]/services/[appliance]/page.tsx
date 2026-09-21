@@ -147,8 +147,8 @@ export default async function CityBrandApplianceRepairPage({ params }: PageProps
               <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">✓</span>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Genuine {brand.name} Parts</h3>
-              <p className="text-gray-600">Only authentic replacement parts</p>
+              <h3 className="font-semibold text-lg mb-2">Parts Matched to Your Model</h3>
+              <p className="text-gray-600">Sourced by your {brand.name} model number</p>
             </div>
             <div className="text-center">
               <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">

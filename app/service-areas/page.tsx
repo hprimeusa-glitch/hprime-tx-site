@@ -4,8 +4,8 @@ import { MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Service Areas | Appliance Repair Across Dallas-Fort Worth - Tarrant, Dallas, Denton, Johnson Counties',
-  description: 'H-Prime Appliance Repair Services covers cities across the Dallas-Fort Worth metroplex. Same-day appliance repair in Tarrant, Dallas, Denton and Johnson counties.',
+  title: 'Service Areas | Appliance Repair in Dallas-Fort Worth and Houston, TX',
+  description: 'H-Prime Appliance Repair Services covers cities across the Dallas-Fort Worth metroplex and Houston. Same-day appliance repair in Tarrant, Dallas, Denton, Johnson and Harris counties.',
   alternates: {
     canonical: 'https://tx.h-prime-co.com/service-areas',
   },
@@ -37,7 +37,7 @@ export default function ServiceAreasPage() {
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: '#1f2937' }}>
-              We Serve {cities.length} Cities Across Dallas-Fort Worth
+              We Serve {cities.length} Cities in Dallas-Fort Worth and Houston
             </h1>
             <p className="text-xl md:text-2xl mb-8" style={{ color: '#374151' }}>
               Same-day appliance repair service available in {countyList}
@@ -61,12 +61,12 @@ export default function ServiceAreasPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-              Professional Appliance Repair Throughout Dallas-Fort Worth
+              Professional Appliance Repair in Dallas-Fort Worth and Houston
             </h2>
             <div className="text-gray-700 space-y-4">
               <p className="text-base md:text-lg leading-relaxed">
                 <strong>H-Prime Appliance Repair Services</strong> is a trusted choice for appliance
-                repair across the Dallas-Fort Worth metroplex. Our technicians provide same-day service to homes and businesses
+                repair across the Dallas-Fort Worth metroplex and Houston. Our technicians provide same-day service to homes and businesses
                 in {countyList}.
               </p>
               <p className="text-base md:text-lg leading-relaxed">
@@ -86,7 +86,7 @@ export default function ServiceAreasPage() {
               Our Service Regions
             </h2>
             <p className="text-xl text-gray-600">
-              Serving {counties.length} counties across Dallas-Fort Worth
+              Serving {counties.length} counties in Dallas-Fort Worth and Houston
             </p>
           </div>
 
@@ -159,7 +159,7 @@ export default function ServiceAreasPage() {
               Can't Find Your City?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              We serve all areas within Fort Worth Metro, Fort Worth, and surrounding Texas regions. Call us to confirm service availability in your area.
+              We serve Dallas-Fort Worth, Houston and the surrounding communities. Call us to confirm service availability in your area.
             </p>
             <a
               href="tel:+18177996313"

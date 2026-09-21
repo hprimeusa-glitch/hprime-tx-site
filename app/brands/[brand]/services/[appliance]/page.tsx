@@ -107,8 +107,8 @@ export default async function BrandApplianceRepairPage({ params }: PageProps) {
                   <CheckCircle className="w-10 h-10 text-orange-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Genuine {brand.name} Parts</h3>
-              <p className="text-gray-600">Only authentic replacement parts used</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Parts Matched to Your Model</h3>
+              <p className="text-gray-600">Sourced by your {brand.name} model number</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
               <div className="flex justify-center mb-4">

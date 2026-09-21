@@ -6,6 +6,7 @@ import Reviews from '@/components/Reviews';
 import SEOContent from '@/components/SEOContent';
 import BrandsSection from '@/components/BrandsSection';
 import { cities, getCitiesByCounty } from '@/lib/data/cities';
+import { counties } from '@/lib/data/counties';
 import { appliances } from '@/lib/data/appliances';
 import { generatePageMetadata } from '@/lib/seo/metadata';
 import { generateLocalBusinessSchema, generateServiceSchema, generateBreadcrumbSchema } from '@/lib/seo/schema';
@@ -101,13 +102,13 @@ export default async function CityPage({ params }: PageProps) {
         <section id="service-area" className="py-12 bg-gray-50">
           <div className="container mx-auto px-4 md:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center mb-8">
-              We Also Serve Nearby Cities in {city.county} County
+              We Also Serve Nearby Cities in {counties.find((c) => c.slug === city.county)?.name ?? 'the Area'}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
               {nearbyCities.map((nearbyCity) => (
                 <Link
                   key={nearbyCity.slug}
-                  href={`/${nearbyCity.slug}`}
+                  href={`/cities/${nearbyCity.slug}`}
                   className="text-center p-4 bg-white rounded-lg hover:shadow-md transition"
                 >
                   <span className="text-gray-900 font-medium">{nearbyCity.name}</span>

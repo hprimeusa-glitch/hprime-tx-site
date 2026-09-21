@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, Phone, Calendar, MapPin } from 'lucide-react';
-import { PHONE_DISPLAY, PHONE_NUMBER, BUSINESS_ADDRESS } from '@/lib/utils';
+import { PHONE_DISPLAY, PHONE_NUMBER, SERVICE_AREA_LABEL } from '@/lib/utils';
 
 const SocialIcon = ({ type, size = 16 }: { type: 'facebook' | 'instagram' | 'youtube'; size?: number }) => {
   const icons = {
@@ -37,7 +37,7 @@ export default function Header() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <MapPin size={14} />
-            <span>{BUSINESS_ADDRESS}</span>
+            <span>{SERVICE_AREA_LABEL}</span>
           </div>
           <div className="flex items-center gap-3">
             {SOCIAL_LINKS.map(({ href, type, label }) => (
@@ -193,7 +193,7 @@ export default function Header() {
               </div>
               <div className="flex items-center gap-2 text-gray-600 justify-center py-2 text-sm border-t mt-2 pt-2">
                 <MapPin size={16} />
-                <span className="text-center">{BUSINESS_ADDRESS}</span>
+                <span className="text-center">{SERVICE_AREA_LABEL}</span>
               </div>
             </div>
           </nav>

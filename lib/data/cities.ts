@@ -1,7 +1,8 @@
-// West DFW service area - H-Prime Appliance Repair
+// Texas service area - H-Prime Appliance Repair: west Dallas-Fort Worth and Houston
 //
-// ZIP codes mirror the Google Ads geo targeting of campaign 24095002203
-// (89 ZIPs, expanded 2026-09-21 from the list the client sent on 2026-09-17).
+// ZIP codes mirror the Google Ads geo targeting one for one: DFW = campaign
+// 24095002203 (89 ZIPs, expanded 2026-09-21 from the list the client sent on
+// 2026-09-17), Houston = the Houston campaign (27 ZIPs, same list).
 // Only ZIPs with a live Google geo target constant are listed: PO-box-only and
 // REMOVAL_PLANNED codes (76004, 76124, 76161 and 41 others) carry no residents.
 //
@@ -58,6 +59,13 @@ export const cities: City[] = [
 
   // --- Johnson County (2026-09-21, not indexed yet) ---
   { slug: 'burleson', name: 'Burleson', county: 'johnson', indexed: false, zipCodes: ['76028'] },
+
+  // --- Harris County, Houston market (2026-09-21, not indexed yet) ---
+  // Mirrors the Houston campaign's 27 ZIPs. 77046 (REMOVAL_PLANNED) and 77402
+  // (PO box, no geo target constant) from the client's list are left out.
+  // 77005 stays Houston: West University Place holds only 51% of it.
+  { slug: 'houston', name: 'Houston', county: 'harris', indexed: false, zipCodes: ['77002', '77005', '77006', '77007', '77008', '77018', '77019', '77024', '77027', '77031', '77035', '77036', '77040', '77042', '77043', '77055', '77056', '77057', '77063', '77071', '77074', '77080', '77081', '77092', '77096', '77098'] },
+  { slug: 'bellaire', name: 'Bellaire', county: 'harris', indexed: false, zipCodes: ['77401'] },
 ];
 
 export function getCitiesByCounty(county: string): City[] {

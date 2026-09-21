@@ -1,3 +1,6 @@
+import { getCityBySlug } from '@/lib/data/cities';
+import { getMarketName } from '@/lib/data/counties';
+
 interface SEOContentProps {
   city?: string;
   appliance?: string;
@@ -9,19 +12,21 @@ export default function SEOContent({ city, appliance, brand, county }: SEOConten
   const cityName = city ? formatCityName(city) : null;
   const applianceName = appliance ? formatApplianceName(appliance) : null;
   const brandName = brand ? formatBrandName(brand) : null;
-  
+  // City pages name their own market (Dallas-Fort Worth or Houston).
+  const market = getMarketName(county ?? (city ? getCityBySlug(city)?.county : undefined));
+
   return (
     <section className="bg-white py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
-          {renderContent({ city: cityName, appliance: applianceName, brand: brandName, county })}
+          {renderContent({ city: cityName, appliance: applianceName, brand: brandName, market })}
         </div>
       </div>
     </section>
   );
 }
 
-function renderContent({ city, appliance, brand, county }: any) {
+function renderContent({ city, appliance, brand, market }: any) {
   // Special handling for Built-In Oven with all alternative names
   const isBuiltInOven = appliance?.toLowerCase().includes('built-in oven');
   const builtInOvenAliases = 'built-in oven, built-in microoven, double wall oven, built-in double oven, oven/microwave combo, stacked oven, wall oven, or combination oven';
@@ -36,13 +41,13 @@ function renderContent({ city, appliance, brand, county }: any) {
         <div className="text-gray-700 space-y-4">
           <p className="text-base md:text-lg leading-relaxed">
             When your {brand} {appliance.toLowerCase()}{isBuiltInOven ? ` (including ${builtInOvenAliases})` : ''} breaks down in {city}, you need a repair service you can trust. 
-            <strong>H-Prime Appliance Repair Services</strong> has been providing expert {brand} appliance repairs throughout {city} and surrounding areas 
+            <strong>H-Prime Appliance Repair Services</strong> provides expert {brand} appliance repairs throughout {city} and surrounding areas
             with expert care. Our technicians specialize in {brand} appliances and can diagnose and fix issues quickly.
           </p>
-          
+
           <p className="text-base md:text-lg leading-relaxed">
-            Our {city} technicians have seen it all when it comes to {brand} {appliance.toLowerCase()} repairs. 
-            Whether it's a minor issue or a major breakdown, we have the expertise to get your appliance working again. 
+            Whether it's a minor issue or a major breakdown, our technicians diagnose your {brand} {appliance.toLowerCase()} before quoting,
+            so you know the price before any work starts.
             Call us today at <strong>(817) 799-6313</strong> for fast, professional {brand} appliance repair in {city}.
           </p>
         </div>
@@ -58,7 +63,7 @@ function renderContent({ city, appliance, brand, county }: any) {
         <div className="text-gray-700 space-y-4">
           <p className="text-base md:text-lg leading-relaxed">
             Is your {appliance.toLowerCase()}{isBuiltInOven ? ` (${builtInOvenAliases})` : ''} acting up in {city}? <strong>H-Prime Appliance Repair Services</strong> provides expert {appliance.toLowerCase()} 
-            repair for all major brands throughout {city} and the surrounding Fort Worth Metro area. Our certified technicians can diagnose and repair your {appliance.toLowerCase()} quickly and efficiently.
+            repair for all major brands throughout {city} and the surrounding {market} area. Our certified technicians can diagnose and repair your {appliance.toLowerCase()} quickly and efficiently.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed">
@@ -84,14 +89,14 @@ function renderContent({ city, appliance, brand, county }: any) {
         <div className="text-gray-700 space-y-4">
           <p className="text-base md:text-lg leading-relaxed">
             Looking for reliable {brand} appliance repair in {city}? <strong>H-Prime Appliance Repair Services</strong> specializes in {brand} appliances 
-            and has been serving {city} residents with expert care. Our technicians are experts in diagnosing 
+            and serves {city} residents with expert care. Our technicians are experts in diagnosing
             and repairing all {brand} appliance models.
           </p>
-          
+
           <p className="text-base md:text-lg leading-relaxed">
-            {brand} appliances are known for quality and innovation, and they deserve quality repair service. Our technicians 
-            undergo continuous training on {brand} products to ensure they can handle any issue. We use genuine {brand} parts 
-            for all repairs in {city}, ensuring your appliance works like new.
+            {brand} appliances are built around their own control boards, sensors and part numbers, and a repair goes faster when the
+            technician has worked on that platform before. Our technicians service {brand} appliances across the {market} area and
+            source parts matched to your model number, so the fix holds.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed">
@@ -115,9 +120,8 @@ function renderContent({ city, appliance, brand, county }: any) {
           </p>
           
           <p className="text-base md:text-lg leading-relaxed">
-            Our experienced technicians have repaired thousands of {brand} {appliance.toLowerCase()}s in Texas. 
-            No matter what's wrong with your {appliance.toLowerCase()}, we have the expertise to fix it right the first time. 
-            We use only authentic {brand} replacement parts and back all repairs with our service guarantee.
+            Our technicians work on {brand} {appliance.toLowerCase()}s across the {market} area and diagnose before quoting,
+            so you know the price before any work starts. Parts are matched to your {brand} model number rather than a generic fit.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed">
@@ -135,8 +139,8 @@ function renderContent({ city, appliance, brand, county }: any) {
         
         <div className="text-gray-700 space-y-4">
           <p className="text-base md:text-lg leading-relaxed">
-            <strong>H-Prime Appliance Repair Services</strong> is {city}'s premier appliance repair company, serving residents and businesses throughout 
-            the area with expert care. We repair all major appliance brands and types - from refrigerators and washers to 
+            <strong>H-Prime Appliance Repair Services</strong> repairs appliances for residents and businesses throughout
+            {city} and the surrounding {market} area. We repair all major appliance brands and types - from refrigerators and washers to 
             ovens and dishwashers.
           </p>
           
@@ -167,8 +171,8 @@ function renderContent({ city, appliance, brand, county }: any) {
           </p>
           
           <p className="text-base md:text-lg leading-relaxed">
-            Our technicians undergo continuous training on {brand} products and use only genuine {brand} replacement parts. 
-            This ensures your appliance is repaired to manufacturer specifications and continues to perform reliably. We provide 
+            Our technicians service every {brand} appliance line and source parts matched to your model number.
+            This ensures your appliance is repaired to manufacturer specifications and continues to perform reliably. We provide
             {brand} appliance repair in Fort Worth Metro with same-day service available for most areas.
           </p>
           

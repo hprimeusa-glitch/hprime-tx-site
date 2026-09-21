@@ -279,7 +279,7 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
         </div>
         <div>
           <label htmlFor="city" className={labelCls}>City *</label>
-          <input {...register('city')} type="text" id="city" className={inputCls} placeholder="Fort Worth" autoComplete="address-level2" />
+          <input {...register('city')} type="text" id="city" className={inputCls} placeholder="Your city" autoComplete="address-level2" />
           {errors.city && <p className={errorCls}>{errors.city.message}</p>}
         </div>
       </div>

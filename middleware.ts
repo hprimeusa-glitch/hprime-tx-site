@@ -13,10 +13,12 @@ export const config = {
 };
 
 // ============================================
-// CITY MAPPING (Fort Worth Metro Area - TX)
+// CITY MAPPING (Texas: west Dallas-Fort Worth + Houston)
 // ============================================
+// Every city with its own page in lib/data/cities.ts maps to itself; smaller
+// municipalities inside our ZIPs map to the page that covers them.
 const CITY_NAME_TO_SLUG: Record<string, string> = {
-  // Tarrant County
+  // Dallas-Fort Worth - Tarrant County
   'Fort Worth': 'fort-worth',
   'Keller': 'keller',
   'North Richland Hills': 'north-richland-hills',
@@ -26,13 +28,56 @@ const CITY_NAME_TO_SLUG: Record<string, string> = {
   'Saginaw': 'fort-worth',
   'White Settlement': 'fort-worth',
   'Benbrook': 'fort-worth',
+  'Forest Hill': 'fort-worth',
+  'Everman': 'fort-worth',
   'Hurst': 'hurst',
   'Euless': 'euless',
   'Bedford': 'bedford',
   'Colleyville': 'colleyville',
   'Southlake': 'southlake',
-  'Grapevine': 'colleyville',
+  'Grapevine': 'grapevine',
+  'Arlington': 'arlington',
+  'Pantego': 'arlington',
+  'Dalworthington Gardens': 'arlington',
+  'Mansfield': 'mansfield',
+  'Kennedale': 'kennedale',
+  'Crowley': 'crowley',
+  'Haslet': 'haslet',
+  // Dallas-Fort Worth - Dallas, Denton and Johnson counties
+  'Dallas': 'dallas',
+  'Irving': 'irving',
+  'Grand Prairie': 'grand-prairie',
+  'Coppell': 'coppell',
+  'Carrollton': 'carrollton',
+  'Farmers Branch': 'farmers-branch',
+  'Lewisville': 'lewisville',
+  'Highland Village': 'lewisville',
+  'Flower Mound': 'flower-mound',
+  'Justin': 'justin',
+  'Roanoke': 'roanoke',
+  'Trophy Club': 'roanoke',
+  'Argyle': 'argyle',
+  'Burleson': 'burleson',
+  // Houston - Harris County
+  'Houston': 'houston',
+  'Bellaire': 'bellaire',
+  'West University Place': 'houston',
+  'Southside Place': 'houston',
+  'Piney Point Village': 'houston',
+  'Hunters Creek Village': 'houston',
+  'Bunker Hill Village': 'houston',
+  'Hedwig Village': 'houston',
+  'Spring Valley Village': 'houston',
+  'Hilshire Village': 'houston',
+  'Jersey Village': 'houston',
 };
+
+// An unknown or missing city falls back to the nearer market. Houston sits
+// near 29.8N, Dallas-Fort Worth near 32.8N; 31N splits them cleanly.
+function fallbackCitySlug(latitude?: string): string {
+  const lat = latitude ? parseFloat(latitude) : NaN;
+  return !Number.isNaN(lat) && lat < 31 ? 'houston' : 'fort-worth';
+}
 
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
@@ -55,14 +100,15 @@ export function middleware(request: NextRequest) {
     country: geo.country,
   });
 
-  // Default to Fort Worth if no city detected
+  // No city detected: pick the nearer market by latitude
   if (!cityName) {
-    console.log('[GEO-MIDDLEWARE] No city detected, using Fort Worth as default');
+    const fallback = fallbackCitySlug(geo.latitude);
+    console.log('[GEO-MIDDLEWARE] No city detected, using fallback:', fallback);
     const url = request.nextUrl.clone();
 
     if (pathname.match(/^\/services\/.+/)) {
       const servicePath = pathname.replace('/services/', '');
-      url.pathname = `/cities/fort-worth/services/${servicePath}`;
+      url.pathname = `/cities/${fallback}/services/${servicePath}`;
       return NextResponse.rewrite(url);
     }
 
@@ -82,10 +128,10 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // If city not found → use Fort Worth as default
+  // If city not found → use the nearer market
   if (!citySlug) {
-    console.log('[GEO-MIDDLEWARE] City not in service area, using Fort Worth as default');
-    citySlug = 'fort-worth';
+    citySlug = fallbackCitySlug(geo.latitude);
+    console.log('[GEO-MIDDLEWARE] City not in service area, using fallback:', citySlug);
   }
 
   let newPathname = pathname;
