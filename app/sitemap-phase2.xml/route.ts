@@ -1,11 +1,13 @@
 import { MetadataRoute } from 'next';
 import { appliances } from '@/lib/data/appliances';
 import { brands } from '@/lib/data/brands';
-import { cities } from '@/lib/data/cities';
+import { getIndexedCities } from '@/lib/data/cities';
 
 /**
  * PHASE 2 SITEMAP
- * Remaining brand pages (44) + City+Appliance for all 35 cities (525) — ~569 URLs
+ * Remaining brand pages (44) + City+Appliance for indexed cities
+ *
+ * Mirrors phase 1: cities without `indexed` are served noindex and stay out.
  */
 export async function GET() {
   const baseUrl = 'https://tx.h-prime-co.com';
@@ -20,8 +22,8 @@ export async function GET() {
       priority: 0.7,
     })),
 
-    // City + Appliance for all 35 cities (525 pages)
-    ...cities.flatMap((city) =>
+    // City + Appliance for indexed cities
+    ...getIndexedCities().flatMap((city) =>
       appliances.map((appliance) => ({
         url: `${baseUrl}/cities/${city.slug}/services/${appliance.slug}-repair`,
         lastModified: now,

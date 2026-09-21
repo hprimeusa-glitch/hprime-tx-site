@@ -80,7 +80,7 @@ export default function Footer() {
                   href="/service-areas"
                   className="hover:text-white transition text-sm font-semibold"
                 >
-                  View All 30+ Cities →
+                  View All Cities →
                 </Link>
               </li>
             </ul>

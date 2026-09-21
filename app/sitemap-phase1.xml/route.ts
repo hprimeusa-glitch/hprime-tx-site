@@ -1,18 +1,21 @@
 import { MetadataRoute } from 'next';
 import { appliances } from '@/lib/data/appliances';
 import { brands } from '@/lib/data/brands';
-import { cities } from '@/lib/data/cities';
+import { getIndexedCities } from '@/lib/data/cities';
 
 /**
  * PHASE 1 SITEMAP
- * Core pages, all 15 services, all 35 cities, top-20 brands (~75 URLs)
+ * Core pages, all 15 services, indexed cities, top-20 brands
+ *
+ * Only cities flagged `indexed` in lib/data/cities.ts appear here. The West DFW
+ * cities added on 2026-09-21 serve ads traffic under noindex and are excluded.
  */
 export async function GET() {
   const baseUrl = 'https://tx.h-prime-co.com';
   const now = new Date().toISOString();
 
-  // All service area cities (35)
-  const topCities = cities;
+  // Service area cities eligible for indexing
+  const topCities = getIndexedCities();
 
   // Top 20 most popular brands
   const topBrands = brands.slice(0, 20);
@@ -45,7 +48,7 @@ export async function GET() {
       priority: 0.9,
     })),
 
-    // All 35 city pages
+    // Indexed city pages
     ...topCities.map((city) => ({
       url: `${baseUrl}/cities/${city.slug}`,
       lastModified: now,

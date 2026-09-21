@@ -194,7 +194,7 @@ function renderContent({ city, appliance, brand, county }: any) {
           
           <p className="text-base md:text-lg leading-relaxed">
             We provide professional {appliance.toLowerCase()} repair in Fort Worth Metro, covering Fort Worth, Keller, Southlake, and surrounding Texas cities. 
-            Whether you're in any of our 30+ service cities, we're ready to help with same-day service available in most areas.
+            Whether you're in any of our service cities, we're ready to help with same-day service available in most areas.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed">

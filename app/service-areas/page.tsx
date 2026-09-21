@@ -4,8 +4,8 @@ import { MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Service Areas | Appliance Repair in Fort Worth Metro - Fort Worth, Arapahoe, Jefferson, Adams, Douglas, Boulder Counties',
-  description: 'H-Prime Appliance Repair Services covers 30+ cities in Fort Worth Metro area. Same-day appliance repair in Fort Worth, Arapahoe, Jefferson, Adams, Douglas, and Boulder counties.',
+  title: 'Service Areas | Appliance Repair Across Dallas-Fort Worth - Tarrant, Dallas, Denton, Johnson Counties',
+  description: 'H-Prime Appliance Repair Services covers cities across the Dallas-Fort Worth metroplex. Same-day appliance repair in Tarrant, Dallas, Denton and Johnson counties.',
   alternates: {
     canonical: 'https://tx.h-prime-co.com/service-areas',
   },
@@ -14,13 +14,16 @@ export const metadata = {
 export default function ServiceAreasPage() {
   // Group cities by county
   const citiesByCounty: Record<string, typeof cities> = {};
-  
+
   cities.forEach((city) => {
     if (!citiesByCounty[city.county]) {
       citiesByCounty[city.county] = [];
     }
     citiesByCounty[city.county].push(city);
   });
+
+  const countyNames = counties.map((c) => c.name.replace(' County', ''));
+  const countyList = `${countyNames.slice(0, -1).join(', ')} and ${countyNames[countyNames.length - 1]} counties`;
 
   return (
     <>
@@ -34,10 +37,10 @@ export default function ServiceAreasPage() {
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: '#1f2937' }}>
-              We Serve 30+ Cities in Fort Worth Metro Area
+              We Serve {cities.length} Cities Across Dallas-Fort Worth
             </h1>
             <p className="text-xl md:text-2xl mb-8" style={{ color: '#374151' }}>
-              Same-day appliance repair service available in Fort Worth, Arapahoe, Jefferson, Adams, Douglas, and Boulder counties
+              Same-day appliance repair service available in {countyList}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a
@@ -58,13 +61,13 @@ export default function ServiceAreasPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-              Professional Appliance Repair Throughout Fort Worth Metro
+              Professional Appliance Repair Throughout Dallas-Fort Worth
             </h2>
             <div className="text-gray-700 space-y-4">
               <p className="text-base md:text-lg leading-relaxed">
-                <strong>H-Prime Appliance Repair Services</strong> is a trusted choice for appliance 
-                repair in Fort Worth Metro area. Our technicians provide same-day service to homes and businesses 
-                in Fort Worth, Arapahoe, Jefferson, Adams, Douglas, and Boulder counties.
+                <strong>H-Prime Appliance Repair Services</strong> is a trusted choice for appliance
+                repair across the Dallas-Fort Worth metroplex. Our technicians provide same-day service to homes and businesses
+                in {countyList}.
               </p>
               <p className="text-base md:text-lg leading-relaxed">
                 We repair all major brands — LG, Samsung, Whirlpool, GE, Maytag, Bosch, KitchenAid, and more. 
@@ -83,7 +86,7 @@ export default function ServiceAreasPage() {
               Our Service Regions
             </h2>
             <p className="text-xl text-gray-600">
-              Serving 6 counties in Fort Worth Metro area
+              Serving {counties.length} counties across Dallas-Fort Worth
             </p>
           </div>
 
