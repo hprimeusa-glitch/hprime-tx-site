@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
-import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT } from '@/lib/booking';
+import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, isSlotOpen, isValidDateISO } from '@/lib/booking';
 
 interface LeadData {
   name: string;
@@ -67,8 +67,13 @@ export async function POST(request: NextRequest) {
     bookingDate = data.preferredDate || '';
     bookingSlot = data.preferredTimeSlot || '';
     const validBooking =
-      /^\d{4}-\d{2}-\d{2}$/.test(bookingDate) &&
-      (TIME_SLOTS as readonly string[]).includes(bookingSlot);
+      isValidDateISO(bookingDate) && TIME_SLOTS.includes(bookingSlot);
+
+    // A window that is already running (or a weekend) is refused here too —
+    // the browser can sit on the form long enough for its own check to go stale.
+    if (validBooking && !isSlotOpen(bookingDate, bookingSlot)) {
+      return NextResponse.json({ error: 'slot_closed', reason: 'closed' }, { status: 409 });
+    }
 
     if (validBooking) {
       try {
@@ -84,7 +89,7 @@ export async function POST(request: NextRequest) {
             [bookingDate, bookingSlot, MAX_BOOKINGS_PER_SLOT]
           );
           if (rows.length === 0) {
-            return NextResponse.json({ error: 'slot_full' }, { status: 409 });
+            return NextResponse.json({ error: 'slot_full', reason: 'full' }, { status: 409 });
           }
           slotReserved = true;
         }

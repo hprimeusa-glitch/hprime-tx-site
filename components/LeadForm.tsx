@@ -6,18 +6,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PatternFormat } from 'react-number-format';
-import { TIME_SLOTS } from '@/lib/booking';
+import { SlotStatus, TIME_SLOT_DEFS, businessNow, isSlotOpen, isWeekendISO } from '@/lib/booking';
 
 // Texas books Monday–Friday only. A native <input type="date"> can't grey out weekends,
-// so we reject Sat/Sun in validation and show a hint. Parse the Y-M-D parts and build a
-// LOCAL date so the weekday check is timezone-safe (no UTC off-by-one).
-const isWeekend = (val: string): boolean => {
-  const [y, m, d] = val.split('-').map(Number);
-  if (!y || !m || !d) return false;
-  const day = new Date(y, m - 1, d).getDay();
-  return day === 0 || day === 6; // Sunday or Saturday
-};
-
+// so we reject Sat/Sun in validation and show a hint. Dates are judged in the shop's
+// timezone, not the visitor's, so a customer two timezones away sees the same day.
 const formSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
@@ -34,21 +27,26 @@ const formSchema = z.object({
   preferredDate: z
     .string()
     .min(1, 'Please select a preferred date')
-    .refine((val) => !isWeekend(val), {
+    .refine((val) => !isWeekendISO(val), {
       message: "We're open Monday through Friday — please choose a weekday.",
+    })
+    .refine((val) => val >= businessNow().date, {
+      message: 'Please choose today or a later date.',
     }),
   preferredTimeSlot: z.string().min(1, 'Please select a time slot'),
+}).superRefine((data, ctx) => {
+  if (data.preferredDate && data.preferredTimeSlot && !isSlotOpen(data.preferredDate, data.preferredTimeSlot)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['preferredTimeSlot'],
+      message: 'This window has already started — please pick a later one.',
+    });
+  }
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 const STEP_1_FIELDS: Array<keyof FormData> = ['firstName', 'lastName', 'phone', 'email', 'message'];
-
-const todayLocalISO = (): string => {
-  const now = new Date();
-  const offsetMs = now.getTimezoneOffset() * 60_000;
-  return new Date(now.getTime() - offsetMs).toISOString().slice(0, 10);
-};
 
 interface LeadFormProps {
   variant?: 'section' | 'modal';
@@ -59,8 +57,12 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'slot_full'>('idle');
-  const [slotAvailability, setSlotAvailability] = useState<Record<string, boolean> | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'slot_full' | 'slot_closed'>('idle');
+  const [slotStatus, setSlotStatus] = useState<Record<string, SlotStatus> | null>(null);
+  // The earliest day still worth offering, from the server: today while a window is
+  // open, the next weekday once they have all started. Empty until it loads, so a
+  // statically cached page never ships a stale date.
+  const [minDate, setMinDate] = useState<string>('');
   const [availabilityRefresh, setAvailabilityRefresh] = useState(0);
 
   const {
@@ -79,18 +81,17 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
   const selectedDate = watch('preferredDate');
 
   useEffect(() => {
-    if (!selectedDate || !/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
-      setSlotAvailability(null);
-      return;
-    }
+    const hasDate = Boolean(selectedDate) && /^\d{4}-\d{2}-\d{2}$/.test(selectedDate);
     let cancelled = false;
-    fetch(`/api/slot-availability?date=${selectedDate}`)
+    fetch(hasDate ? `/api/slot-availability?date=${selectedDate}` : '/api/slot-availability')
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
-        if (!cancelled) setSlotAvailability(json?.availability ?? null);
+        if (cancelled) return;
+        if (json?.minDate) setMinDate(json.minDate);
+        setSlotStatus(hasDate ? json?.status ?? null : null);
       })
       .catch(() => {
-        if (!cancelled) setSlotAvailability(null);
+        if (!cancelled) setSlotStatus(null);
       });
     return () => {
       cancelled = true;
@@ -168,7 +169,8 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
         });
         router.push(`/thank-you-page?${tyParams.toString()}`);
       } else if (response.status === 409) {
-        setSubmitStatus('slot_full');
+        const body = await response.json().catch(() => null);
+        setSubmitStatus(body?.reason === 'closed' ? 'slot_closed' : 'slot_full');
         setAvailabilityRefresh((k) => k + 1);
       } else {
         setSubmitStatus('error');
@@ -180,6 +182,8 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
       setIsSubmitting(false);
     }
   };
+
+  const noSlotsLeft = Boolean(slotStatus) && TIME_SLOT_DEFS.every(({ label }) => slotStatus?.[label] !== 'open');
 
   const inputCls =
     'w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent';
@@ -312,10 +316,10 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
             {...register('preferredDate')}
             type="date"
             id="preferredDate"
-            min={todayLocalISO()}
+            min={minDate || undefined}
             className={inputCls}
           />
-          <p className="text-gray-500 text-xs mt-0.5">Open Monday–Friday, 8 AM – 6 PM.</p>
+          <p className="text-gray-500 text-xs mt-0.5">We book Monday–Friday, 8 AM – 5 PM.</p>
           {errors.preferredDate && <p className={errorCls}>{errors.preferredDate.message}</p>}
         </div>
         <div>
@@ -327,16 +331,23 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
             defaultValue=""
           >
             <option value="" disabled>Select…</option>
-            {TIME_SLOTS.map((slot) => {
-              const isFull = slotAvailability ? slotAvailability[slot] === false : false;
+            {TIME_SLOT_DEFS.map(({ label }) => {
+              const status = slotStatus?.[label] ?? 'open';
+              const suffix =
+                status === 'full' ? ' — fully booked' : status === 'closed' ? ' — too late today' : '';
               return (
-                <option key={slot} value={slot} disabled={isFull}>
-                  {slot}{isFull ? ' — fully booked' : ''}
+                <option key={label} value={label} disabled={status !== 'open'}>
+                  {label}{suffix}
                 </option>
               );
             })}
           </select>
           {errors.preferredTimeSlot && <p className={errorCls}>{errors.preferredTimeSlot.message}</p>}
+          {noSlotsLeft && (
+            <p className="text-gray-500 text-xs mt-0.5">
+              Nothing left for this day — pick the next one, or call us.
+            </p>
+          )}
         </div>
       </div>
 
@@ -367,6 +378,13 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
       {submitStatus === 'slot_full' && (
         <div className="bg-amber-100 border border-amber-400 text-amber-800 px-3 py-2 rounded text-sm">
           Sorry, this time slot is already fully booked for the selected date. Please pick another time slot or date.
+        </div>
+      )}
+
+      {submitStatus === 'slot_closed' && (
+        <div className="bg-amber-100 border border-amber-400 text-amber-800 px-3 py-2 rounded text-sm">
+          That window has already started. Please pick a later one — or call us and we will find the
+          fastest slot.
         </div>
       )}
     </div>
