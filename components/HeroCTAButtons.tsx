@@ -3,6 +3,7 @@
 import { Phone, Calendar } from 'lucide-react';
 import { PHONE_NUMBER, PHONE_DISPLAY } from '@/lib/utils';
 import { useModal } from '@/contexts/ModalContext';
+import { pushOpenLeadForm } from '@/lib/formType';
 
 export default function HeroCTAButtons() {
   const { openModal } = useModal();
@@ -21,12 +22,7 @@ export default function HeroCTAButtons() {
       </a>
       <button
         onClick={() => {
-          if (typeof window !== 'undefined' && (window as any).dataLayer) {
-            (window as any).dataLayer.push({
-              event: 'open_lead_form',
-              label: 'hero_book_button'
-            });
-          }
+          pushOpenLeadForm('hero_book_button');
           openModal();
         }}
         className="flex items-center gap-2 md:gap-3 text-gray-900 px-6 md:px-10 py-3 md:py-5 rounded-lg transition font-semibold text-base md:text-xl shadow-lg hover:shadow-xl w-full md:w-auto justify-center cursor-pointer"

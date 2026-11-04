@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { appliances } from '@/lib/data/appliances';
 import { brands } from '@/lib/data/brands';
 import { getIndexedCities } from '@/lib/data/cities';
+import { gymServices } from '@/lib/data/gymServices';
 
 /**
  * PHASE 1 SITEMAP
@@ -70,6 +71,29 @@ export async function GET() {
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
+    },
+
+    // Gym section: the hub, /gym/commercial and only the equipment pages flagged
+    // `indexable` in lib/data/gymServices.ts. The rest are noindex,follow.
+    {
+      url: `${baseUrl}/gym`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    ...gymServices
+      .filter((service) => service.indexable)
+      .map((service) => ({
+        url: `${baseUrl}/gym/${service.path}`,
+        lastModified: now,
+        changeFrequency: 'weekly' as const,
+        priority: 0.85,
+      })),
+    {
+      url: `${baseUrl}/gym/commercial`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
     },
 
     // Legal pages are noindex — intentionally excluded from the sitemap

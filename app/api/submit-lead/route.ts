@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
-import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, isSlotOpen, isValidDateISO } from '@/lib/booking';
+import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, isSlotOpen, isValidDateISO, slotKeyFor } from '@/lib/booking';
+import { parseFormType } from '@/lib/formType';
 
 interface LeadData {
   name: string;
@@ -15,6 +16,8 @@ interface LeadData {
   appliance?: string;
   preferredDate?: string;
   preferredTimeSlot?: string;
+  /** 'gym' from the /gym pages; missing or anything else = appliance */
+  formType?: string;
   attribution?: Record<string, string>;
   submission_page?: string;
 }
@@ -43,6 +46,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const data: LeadData = await request.json();
+    const formType = parseFormType(data.formType);
+    const isGym = formType === 'gym';
 
     if (!data.name || !data.phone || !data.email) {
       return NextResponse.json(
@@ -75,6 +80,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'slot_closed', reason: 'closed' }, { status: 409 });
     }
 
+    // Gym bookings live under 'gym|<label>' so the two forms never share capacity.
+    const slotKey = slotKeyFor(bookingSlot, formType);
+
     if (validBooking) {
       try {
         const pool = getPool();
@@ -86,12 +94,13 @@ export async function POST(request: NextRequest) {
              DO UPDATE SET cnt = reporting.hprime_tx_slots.cnt + 1, updated_at = now()
              WHERE reporting.hprime_tx_slots.cnt < $3
              RETURNING cnt`,
-            [bookingDate, bookingSlot, MAX_BOOKINGS_PER_SLOT]
+            [bookingDate, slotKey, MAX_BOOKINGS_PER_SLOT]
           );
           if (rows.length === 0) {
             return NextResponse.json({ error: 'slot_full', reason: 'full' }, { status: 409 });
           }
           slotReserved = true;
+          bookingSlot = slotKey;
         }
       } catch (error) {
         console.error('[SLOTS] capacity check failed, failing open:', error);
@@ -120,7 +129,9 @@ export async function POST(request: NextRequest) {
     const addressLine = addressParts.join(', ');
 
     const lines: string[] = [
-      '🔔 <b>New Appliance Repair Lead (Texas)</b>',
+      isGym
+        ? '🏋️ <b>New Gym Equipment Repair Lead (Texas)</b>'
+        : '🔔 <b>New Appliance Repair Lead (Texas)</b>',
       '',
       `👤 <b>Name:</b> ${escapeHtml(data.name)}`,
       `📞 <b>Phone:</b> <a href="tel:+1${phoneDigits}">${escapeHtml(phoneFormatted)}</a>`,
@@ -130,7 +141,7 @@ export async function POST(request: NextRequest) {
       lines.push(`📍 <b>Address:</b> ${escapeHtml(addressLine)}`);
     }
     if (data.appliance) {
-      lines.push(`🔧 <b>Appliance:</b> ${escapeHtml(data.appliance)}`);
+      lines.push(`🔧 <b>${isGym ? 'Equipment' : 'Appliance'}:</b> ${escapeHtml(data.appliance)}`);
     }
 
     if (data.preferredDate || data.preferredTimeSlot) {

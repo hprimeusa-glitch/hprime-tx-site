@@ -25,6 +25,7 @@ const SOCIAL_LINKS = [
   { href: 'https://www.youtube.com/@MeToTarass', type: 'youtube' as const, label: 'YouTube' },
 ];
 import { useModal } from '@/contexts/ModalContext';
+import { pushOpenLeadForm } from '@/lib/formType';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,12 +66,17 @@ export default function Header() {
           </Link>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
         <Link href="/#our-services" className="text-gray-900 hover:text-blue-400 transition font-medium">
           Services
         </Link>
         <Link href="/commercial" className="text-gray-900 hover:text-blue-400 transition font-medium">
           Commercial
+        </Link>
+        {/* Short label at md: the full nav only just fits at 768px. */}
+        <Link href="/gym" className="text-gray-900 hover:text-blue-400 transition font-medium whitespace-nowrap">
+          <span className="lg:hidden">Gym</span>
+          <span className="hidden lg:inline">Gym Equipment</span>
         </Link>
         <Link href="/#brands" className="text-gray-900 hover:text-blue-400 transition font-medium">
           Brands
@@ -83,12 +89,7 @@ export default function Header() {
             </Link>
             <button
             onClick={() => {
-               if (typeof window !== 'undefined' && (window as any).dataLayer) {
-                  (window as any).dataLayer.push({
-                    event: 'open_lead_form',
-                    label: 'header_button'
-                  });
-               }
+               pushOpenLeadForm('header_button');
                openModal();
             }}
             className="flex items-center gap-2 text-gray-900 px-6 py-2 rounded-lg transition font-semibold cursor-pointer"
@@ -146,6 +147,13 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Commercial
+              </Link>
+              <Link
+                href="/gym"
+                className="text-gray-900 hover:text-blue-400 transition py-2 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Gym Equipment
               </Link>
               <Link
                 href="/#brands"

@@ -7,6 +7,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PatternFormat } from 'react-number-format';
 import { SlotStatus, TIME_SLOT_DEFS, businessNow, isSlotOpen, isWeekendISO } from '@/lib/booking';
+import { FormType, LEAD_EVENTS } from '@/lib/formType';
+
+// The free-text field is the only visible difference between the two forms.
+// Its value is sent as `appliance` in both cases; the API reads `formType`.
+const ISSUE_FIELD: Record<FormType, { label: string; placeholder: string }> = {
+  appliance: {
+    label: 'What appliance needs repair? *',
+    placeholder: 'My Samsung refrigerator is not cooling',
+  },
+  gym: {
+    label: 'What gym equipment needs repair? *',
+    placeholder: 'e.g. NordicTrack treadmill, belt slipping',
+  },
+};
 
 // Texas books Monday–Friday only. A native <input type="date"> can't grey out weekends,
 // so we reject Sat/Sun in validation and show a hint. Dates are judged in the shop's
@@ -50,10 +64,12 @@ const STEP_1_FIELDS: Array<keyof FormData> = ['firstName', 'lastName', 'phone', 
 
 interface LeadFormProps {
   variant?: 'section' | 'modal';
+  formType?: FormType;
   onSuccess?: () => void;
 }
 
-export default function LeadForm({ variant = 'section', onSuccess }: LeadFormProps) {
+export default function LeadForm({ variant = 'section', formType = 'appliance', onSuccess }: LeadFormProps) {
+  const isGym = formType === 'gym';
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,7 +99,11 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
   useEffect(() => {
     const hasDate = Boolean(selectedDate) && /^\d{4}-\d{2}-\d{2}$/.test(selectedDate);
     let cancelled = false;
-    fetch(hasDate ? `/api/slot-availability?date=${selectedDate}` : '/api/slot-availability')
+    const query = new URLSearchParams();
+    if (hasDate) query.set('date', selectedDate);
+    if (isGym) query.set('form', 'gym');
+    const qs = query.toString();
+    fetch(qs ? `/api/slot-availability?${qs}` : '/api/slot-availability')
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
         if (cancelled) return;
@@ -96,7 +116,7 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
     return () => {
       cancelled = true;
     };
-  }, [selectedDate, availabilityRefresh]);
+  }, [selectedDate, availabilityRefresh, isGym]);
 
   const goToStep2 = async () => {
     const valid = await trigger(STEP_1_FIELDS);
@@ -138,6 +158,7 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
           appliance: cleanText(data.message),
           preferredDate: data.preferredDate,
           preferredTimeSlot: data.preferredTimeSlot,
+          ...(isGym && { formType: 'gym' }),
           attribution,
           submission_page: typeof window !== 'undefined' ? window.location.pathname + window.location.search : '',
         }),
@@ -146,7 +167,8 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
       if (response.ok) {
         if (typeof window !== 'undefined' && (window as { dataLayer?: Record<string, unknown>[] }).dataLayer) {
           (window as { dataLayer: Record<string, unknown>[] }).dataLayer.push({
-            event: 'lead_submitted',
+            event: LEAD_EVENTS[formType].submitted,
+            form_type: formType,
             enhanced_conversions: {
               email: data.email,
               phone_number: `+1${cleanedPhone}`,
@@ -167,6 +189,7 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
           date: data.preferredDate,
           time: data.preferredTimeSlot,
         });
+        if (isGym) tyParams.set('form', 'gym');
         router.push(`/thank-you-page?${tyParams.toString()}`);
       } else if (response.status === 409) {
         const body = await response.json().catch(() => null);
@@ -246,13 +269,13 @@ export default function LeadForm({ variant = 'section', onSuccess }: LeadFormPro
       </div>
 
       <div>
-        <label htmlFor="message" className={labelCls}>What appliance needs repair? *</label>
+        <label htmlFor="message" className={labelCls}>{ISSUE_FIELD[formType].label}</label>
         <textarea
           {...register('message')}
           id="message"
           rows={3}
           className={inputCls}
-          placeholder="My Samsung refrigerator is not cooling"
+          placeholder={ISSUE_FIELD[formType].placeholder}
         />
         {errors.message && <p className={errorCls}>{errors.message.message}</p>}
       </div>

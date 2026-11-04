@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Tag } from 'lucide-react';
 import { useModal } from '@/contexts/ModalContext';
+import { pushOpenLeadForm } from '@/lib/formType';
 
 const CURRENT_MONTH = new Date().toLocaleString('en-US', { month: 'long' });
 
@@ -37,11 +38,8 @@ export default function PromoPopup() {
         event: 'promo_popup_click',
         label: 'save_35_march',
       });
-      (window as any).dataLayer.push({
-        event: 'open_lead_form',
-        label: 'promo_popup',
-      });
     }
+    pushOpenLeadForm('promo_popup');
     handleDismiss();
     openModal();
   };

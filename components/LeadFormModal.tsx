@@ -2,13 +2,20 @@
 
 import { X } from 'lucide-react';
 import LeadForm from './LeadForm';
+import type { FormType } from '@/lib/formType';
 
 interface LeadFormModalProps {
   isOpen: boolean;
   onClose: () => void;
+  formType?: FormType;
 }
 
-export default function LeadFormModal({ isOpen, onClose }: LeadFormModalProps) {
+const MODAL_TITLES: Record<FormType, string> = {
+  appliance: 'Book Appliance Repair Service',
+  gym: 'Book Gym Equipment Repair',
+};
+
+export default function LeadFormModal({ isOpen, onClose, formType = 'appliance' }: LeadFormModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -16,7 +23,7 @@ export default function LeadFormModal({ isOpen, onClose }: LeadFormModalProps) {
       <div className="relative w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         <div className="shrink-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between z-10">
           <h2 className="text-base sm:text-lg font-bold text-gray-900">
-            Book Appliance Repair Service
+            {MODAL_TITLES[formType]}
           </h2>
           <button
             onClick={onClose}
@@ -28,7 +35,7 @@ export default function LeadFormModal({ isOpen, onClose }: LeadFormModalProps) {
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4">
-          <LeadForm variant="modal" onSuccess={onClose} />
+          <LeadForm key={formType} variant="modal" formType={formType} onSuccess={onClose} />
         </div>
       </div>
     </div>

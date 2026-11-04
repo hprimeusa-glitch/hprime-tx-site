@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { PHONE_DISPLAY, PHONE_NUMBER, BUSINESS_EMAIL, BUSINESS_NAME, BUSINESS_ADDRESS } from '@/lib/utils';
 import { appliances } from '@/lib/data/appliances';
+import FooterTrust from './FooterTrust';
 
 export default function Footer() {
   const majorAppliances = appliances.slice(0, 15);
@@ -32,9 +33,7 @@ export default function Footer() {
                 {BUSINESS_EMAIL}
               </a>
             </p>
-            <p className="text-sm mt-4">EPA Certified Technicians</p>
-            <p className="text-sm">Whirlpool Trained</p>
-            <p className="text-sm">Transparent Pricing — No Hidden Fees</p>
+            <FooterTrust />
             <p className="text-sm mt-2">Mon-Fri: 7AM-9:30PM</p>
             <p className="text-sm">Sat: 8AM-8PM</p>
           </div>
@@ -56,6 +55,11 @@ export default function Footer() {
               <li className="pt-2 border-t border-gray-700 mt-2">
                 <Link href="/commercial" className="hover:text-white transition text-sm font-semibold" style={{ color: '#FFC704' }}>
                   Commercial Services →
+                </Link>
+              </li>
+              <li>
+                <Link href="/gym" className="hover:text-white transition text-sm font-semibold" style={{ color: '#FFC704' }}>
+                  Gym Equipment Repair →
                 </Link>
               </li>
             </ul>

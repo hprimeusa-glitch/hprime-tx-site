@@ -112,3 +112,22 @@ export function firstBookableDate(now: BusinessNow = businessNow()): string {
   }
   return date;
 }
+
+/**
+ * Gym and appliance bookings share reporting.hprime_tx_slots but count capacity
+ * separately. The DB role cannot ALTER the table, and time_slot is a free text
+ * column in the (booking_date, time_slot) primary key, so gym rows are stored
+ * under a namespaced key: 'gym|8 AM – 11 AM'. Appliance rows keep the bare label,
+ * exactly as before, so the appliance counter is untouched.
+ */
+export const GYM_SLOT_PREFIX = 'gym|';
+
+export const slotKeyFor = (slotLabel: string, formType: 'appliance' | 'gym'): string =>
+  formType === 'gym' ? `${GYM_SLOT_PREFIX}${slotLabel}` : slotLabel;
+
+/** Map a stored time_slot back to its label for one form type, or null if it belongs to the other. */
+export function slotLabelFromKey(key: string, formType: 'appliance' | 'gym'): string | null {
+  const isGymKey = key.startsWith(GYM_SLOT_PREFIX);
+  if (formType === 'gym') return isGymKey ? key.slice(GYM_SLOT_PREFIX.length) : null;
+  return isGymKey ? null : key;
+}

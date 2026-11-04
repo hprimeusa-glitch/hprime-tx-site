@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { PHONE_NUMBER, PHONE_DISPLAY, BUSINESS_NAME } from '@/lib/utils';
 import ThankYouTracker from '@/components/ThankYouTracker';
 import type { Metadata } from 'next';
+import { parseFormType } from '@/lib/formType';
 
 export const metadata: Metadata = {
   title: `Thank You | ${BUSINESS_NAME}`,
@@ -24,16 +25,17 @@ const formatDate = (iso?: string) => {
 export default async function ThankYouPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string; time?: string }>;
+  searchParams: Promise<{ date?: string; time?: string; form?: string }>;
 }) {
   const params = await searchParams;
   const date = formatDate(params.date);
   const time = params.time;
   const hasAppointment = Boolean(date && time);
+  const formType = parseFormType(params.form);
 
   return (
     <section className="py-16 bg-gray-50 min-h-[60vh] flex items-center">
-      <ThankYouTracker />
+      <ThankYouTracker formType={formType} />
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
           <div className="flex justify-center mb-6">
@@ -89,7 +91,7 @@ export default async function ThankYouPage({
           </p>
 
           <Link
-            href="/"
+            href={formType === 'gym' ? '/gym' : '/'}
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors text-sm"
           >
             <ArrowLeft className="w-4 h-4" />

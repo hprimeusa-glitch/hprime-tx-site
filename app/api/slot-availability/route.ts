@@ -8,12 +8,16 @@ import {
   firstBookableDate,
   isSlotOpen,
   isValidDateISO,
+  slotLabelFromKey,
 } from '@/lib/booking';
+import { parseFormType } from '@/lib/formType';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const now = businessNow();
+  // ?form=gym reads the gym counter; anything else reads the appliance counter.
+  const formType = parseFormType(request.nextUrl.searchParams.get('form'));
   const minDate = firstBookableDate(now);
 
   // No date yet: the form only needs the earliest day it may offer.
@@ -38,8 +42,9 @@ export async function GET(request: NextRequest) {
         [date]
       );
       for (const row of rows) {
-        if (status[row.time_slot] === 'open' && row.cnt >= MAX_BOOKINGS_PER_SLOT) {
-          status[row.time_slot] = 'full';
+        const label = slotLabelFromKey(row.time_slot, formType);
+        if (label && status[label] === 'open' && row.cnt >= MAX_BOOKINGS_PER_SLOT) {
+          status[label] = 'full';
         }
       }
     }
