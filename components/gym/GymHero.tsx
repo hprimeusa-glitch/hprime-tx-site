@@ -3,23 +3,33 @@ import { CheckCircle2 } from 'lucide-react';
 import GymBookButton from './GymBookButton';
 import GymCallButton from './GymCallButton';
 import { gymTrustPoints } from '@/lib/data/gymContent';
+import type { GymBrand } from '@/lib/data/gymBrands';
+import { GymBrandTile } from './GymBrandsGrid';
 
 interface GymHeroProps {
   eyebrow: string;
   title: string;
   subtitle: string;
-  image: string;
-  imageAlt: string;
+  /** Omitted when no photo matches (brand pages never show another brand's machine). */
+  image?: string;
+  imageAlt?: string;
   trackingLabel: string;
+  /** Brand pages show the brand logo (or a text tile) above the H1. */
+  brand?: GymBrand;
 }
 
 // No entrance animation: the H1 is the LCP candidate and must paint at once.
-export default function GymHero({ eyebrow, title, subtitle, image, imageAlt, trackingLabel }: GymHeroProps) {
+export default function GymHero({ eyebrow, title, subtitle, image, imageAlt, trackingLabel, brand }: GymHeroProps) {
   return (
     <section className="overflow-hidden text-white" style={{ backgroundColor: '#1B2A4A' }}>
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-16">
-        <div className="grid gap-8 md:grid-cols-2 md:items-center">
+        <div className={`grid gap-8 md:items-center ${image ? 'md:grid-cols-2' : ''}`}>
           <div className="min-w-0">
+            {brand && (
+              <div className="mb-4 inline-flex h-16 max-w-[220px] items-center rounded-lg bg-white px-4 py-2 shadow-sm">
+                <GymBrandTile brand={brand} />
+              </div>
+            )}
             <p className="mb-3 text-sm font-semibold uppercase tracking-wider" style={{ color: '#FFC704' }}>
               {eyebrow}
             </p>
@@ -38,9 +48,11 @@ export default function GymHero({ eyebrow, title, subtitle, image, imageAlt, tra
               ))}
             </ul>
           </div>
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-2xl">
-            <Image src={image} alt={imageAlt} fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
-          </div>
+          {image && (
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-2xl">
+              <Image src={image} alt={imageAlt ?? ''} fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+            </div>
+          )}
         </div>
       </div>
     </section>

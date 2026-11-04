@@ -9,6 +9,8 @@
  * any work starts), no years in business, review counts, licensing, factory
  * training or parts-origin claims, no superlatives, no out-of-state locations.
  *
+ * Brands shown on each page come from equipmentBrandMap in lib/data/gymBrands.ts.
+ *
  * Indexing: only pages with `indexable: true` go into sitemap-phase1 and render
  * index,follow. The rest serve ads and internal links under noindex,follow until
  * they are released.
@@ -47,7 +49,8 @@ export interface GymService {
   problems: GymProblem[];
   checksHeading: string;
   checks: string[];
-  brandSlugs: string[];
+  /** equipment name for brand combo pages ("Treadmill" → "NordicTrack Treadmill Repair") */
+  label: string;
   faqs: GymFaq[];
 }
 
@@ -112,7 +115,7 @@ export const gymServices: GymService[] = [
       'Look up how your model is lubricated before adding anything. Some decks want silicone on a schedule, others say never apply lubricant unless the manual tells you to, and waxed decks must not be treated at all.',
       'Write down the brand, model and serial number from the frame label and any message on the console. A photo is enough.',
     ],
-    brandSlugs: ['life-fitness', 'precor', 'nordictrack', 'proform', 'sole', 'horizon', 'peloton', 'matrix', 'true-fitness', 'spirit', 'bowflex', 'star-trac'],
+    label: 'Treadmill',
     faqs: [
       {
         q: 'Do you repair treadmills at home or do I need to bring it in?',
@@ -169,7 +172,7 @@ export const gymServices: GymService[] = [
       'Note which part of the stride the noise happens in, and whether it changes with resistance level.',
       'Take a photo of the serial label, usually on the frame near the front stabilizer.',
     ],
-    brandSlugs: ['life-fitness', 'precor', 'nordictrack', 'sole', 'horizon', 'matrix', 'bowflex', 'schwinn', 'nautilus', 'proform'],
+    label: 'Elliptical',
     faqs: [
       { q: 'Can you fix an elliptical that squeaks no matter what I do?', a: 'Usually. Persistent squeaks come from a worn bushing or bearing in one of the pivots, and spraying lubricant on the outside rarely reaches it. We locate the joint and replace or service the worn part.' },
       { q: 'How is the price set?', a: 'The technician diagnoses the machine first and gives you an upfront quote before any work starts.' },
@@ -209,7 +212,7 @@ export const gymServices: GymService[] = [
       'Check that the pedals are tight in the crank arms. A loose pedal clicks on every stroke.',
       'Note the model and serial number from the frame label.',
     ],
-    brandSlugs: ['peloton', 'keiser', 'schwinn', 'bowflex', 'nordictrack', 'life-fitness', 'matrix', 'star-trac'],
+    label: 'Exercise Bike',
     faqs: [
       { q: 'Do you work on connected bikes like Peloton?', a: 'Yes, we repair the mechanical and electrical side of connected bikes: resistance, flywheel, pedals, cranks, cables and power. Subscription and app problems are handled by the manufacturer.' },
       { q: 'Can you service a full cycling studio?', a: 'Yes. For studios and gyms we can work through several bikes in one visit. See our commercial gym equipment page for preventive maintenance.' },
@@ -248,7 +251,7 @@ export const gymServices: GymService[] = [
       'Replace the monitor batteries if your model uses them.',
       'Note the model and serial number.',
     ],
-    brandSlugs: ['concept2', 'life-fitness', 'matrix', 'bowflex', 'nordictrack', 'technogym'],
+    label: 'Rowing Machine',
     faqs: [
       { q: 'Do you repair water rowers?', a: 'Yes, along with air and magnetic rowers. Tell us the model when you book so the technician knows what to expect.' },
       { q: 'How is the price set?', a: 'We diagnose the rower first and give you an upfront quote before any work starts.' },
@@ -285,7 +288,7 @@ export const gymServices: GymService[] = [
       'Take the machine out of use if a step catches or the speed surges.',
       'Note any message on the console and the serial number on the frame.',
     ],
-    brandSlugs: ['stairmaster', 'life-fitness', 'matrix', 'precor', 'bowflex', 'star-trac'],
+    label: 'Stair Climber',
     faqs: [
       { q: 'Do you repair StairMaster machines?', a: 'Yes, along with stepmills and steppers from Life Fitness, Matrix, Precor and other brands.' },
       { q: 'How is the price set?', a: 'We diagnose the machine first and give you an upfront quote before any work starts.' },
@@ -323,7 +326,7 @@ export const gymServices: GymService[] = [
       'Stop using the machine if a cable shows broken strands, kinks or a bulge.',
       'Photograph the cable path and the brand label so we can bring the right cable length.',
     ],
-    brandSlugs: ['hammer-strength', 'life-fitness', 'body-solid', 'matrix', 'precor', 'bowflex', 'nautilus', 'technogym'],
+    label: 'Weight Machine',
     faqs: [
       { q: 'Can you replace cables on any home gym?', a: 'On most of them. Cable length and end fittings vary by model, so send us the brand and model when you book.' },
       { q: 'How is the price set?', a: 'We inspect the machine first and give you an upfront quote before any work starts.' },

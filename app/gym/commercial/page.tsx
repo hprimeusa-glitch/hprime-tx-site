@@ -166,7 +166,12 @@ export default function CommercialGymPage() {
         </div>
       </section>
 
-      <GymBrandsGrid brands={getGymBrands(COMMERCIAL_BRANDS)} heading="Commercial brands we work on" />
+      <GymBrandsGrid
+        brands={getGymBrands(COMMERCIAL_BRANDS)}
+        heading="Commercial brands we work on"
+        hrefFor={(brand) => `/gym/brands/${brand.slug}`}
+        footerLink={{ href: '/gym/brands', label: 'All brands we repair →' }}
+      />
 
       <GymProcess />
 

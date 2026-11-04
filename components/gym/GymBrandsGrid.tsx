@@ -1,7 +1,34 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import type { GymBrand } from '@/lib/data/gymBrands';
 
-export default function GymBrandsGrid({ brands, heading, subheading }: { brands: GymBrand[]; heading: string; subheading?: string }) {
+interface GymBrandsGridProps {
+  brands: GymBrand[];
+  heading: string;
+  subheading?: string;
+  /** Link target per brand. Omit for a plain logo wall. */
+  hrefFor?: (brand: GymBrand) => string;
+  /** Optional "all brands" link under the grid. */
+  footerLink?: { href: string; label: string };
+}
+
+export function GymBrandTile({ brand }: { brand: GymBrand }) {
+  return brand.logo ? (
+    <Image
+      src={brand.logo}
+      alt={`${brand.name} logo`}
+      width={160}
+      height={56}
+      className="h-12 w-auto max-w-full object-contain"
+    />
+  ) : (
+    <span className="text-center text-lg font-bold uppercase tracking-wide text-gray-900">{brand.name}</span>
+  );
+}
+
+const tileCls = 'flex h-20 items-center justify-center rounded-lg border border-gray-200 bg-white p-3 shadow-sm';
+
+export default function GymBrandsGrid({ brands, heading, subheading, hrefFor, footerLink }: GymBrandsGridProps) {
   return (
     <section className="py-14 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -11,20 +38,30 @@ export default function GymBrandsGrid({ brands, heading, subheading }: { brands:
         </div>
         <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {brands.map((brand) => (
-            <li
-              key={brand.slug}
-              className="flex h-20 items-center justify-center rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
-            >
-              <Image
-                src={brand.logo}
-                alt={`${brand.name} logo`}
-                width={160}
-                height={56}
-                className="h-12 w-auto max-w-full object-contain"
-              />
+            <li key={brand.slug}>
+              {hrefFor ? (
+                <Link
+                  href={hrefFor(brand)}
+                  aria-label={`${brand.name} repair`}
+                  className={`${tileCls} transition hover:border-gray-400 hover:shadow-md`}
+                >
+                  <GymBrandTile brand={brand} />
+                </Link>
+              ) : (
+                <div className={tileCls}>
+                  <GymBrandTile brand={brand} />
+                </div>
+              )}
             </li>
           ))}
         </ul>
+        {footerLink && (
+          <p className="mt-6 text-center">
+            <Link href={footerLink.href} className="font-semibold hover:underline" style={{ color: '#398ffc' }}>
+              {footerLink.label}
+            </Link>
+          </p>
+        )}
         <p className="mx-auto mt-6 max-w-3xl text-center text-xs text-gray-500">
           H-Prime is an independent repair service and is not affiliated with or authorized by these manufacturers. Brand names and logos belong to their owners and show the equipment we work on.
         </p>

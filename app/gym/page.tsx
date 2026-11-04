@@ -79,6 +79,8 @@ export default function GymHubPage() {
         brands={gymBrands}
         heading="Brands we work on"
         subheading="Home and commercial lines. Not on the list? Send us the model and we will confirm."
+        hrefFor={(brand) => `/gym/brands/${brand.slug}`}
+        footerLink={{ href: '/gym/brands', label: 'All brands we repair →' }}
       />
 
       <GymProcess />

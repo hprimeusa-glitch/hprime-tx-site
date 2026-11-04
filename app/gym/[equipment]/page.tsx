@@ -8,7 +8,7 @@ import GymFaq from '@/components/gym/GymFaq';
 import GymFinalCTA from '@/components/gym/GymFinalCTA';
 import JsonLd from '@/components/gym/JsonLd';
 import { gymServices, getGymService } from '@/lib/data/gymServices';
-import { getGymBrands } from '@/lib/data/gymBrands';
+import { getBrandsForEquipment } from '@/lib/data/gymBrands';
 import { GYM_AREA } from '@/lib/data/gymContent';
 import { gymMetadata, gymServiceSchema, gymFaqSchema, gymBreadcrumbSchema } from '@/lib/seo/gymSeo';
 
@@ -121,9 +121,11 @@ export default async function GymServicePage({ params }: Props) {
       </section>
 
       <GymBrandsGrid
-        brands={getGymBrands(service.brandSlugs)}
+        brands={getBrandsForEquipment(service.slug)}
         heading={`${service.cardTitle}: brands we work on`}
         subheading="Not on the list? Send us the model and we will confirm before the visit."
+        hrefFor={(brand) => `/gym/brands/${brand.slug}/${service.path}`}
+        footerLink={{ href: '/gym/brands', label: 'All brands we repair →' }}
       />
 
       <GymProcess />
