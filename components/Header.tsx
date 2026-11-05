@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { Menu, X, Phone, Calendar, MapPin } from 'lucide-react';
 import { PHONE_DISPLAY, PHONE_NUMBER, SERVICE_AREA_LABEL } from '@/lib/utils';
@@ -25,11 +26,13 @@ const SOCIAL_LINKS = [
   { href: 'https://www.youtube.com/@MeToTarass', type: 'youtube' as const, label: 'YouTube' },
 ];
 import { useModal } from '@/contexts/ModalContext';
-import { pushOpenLeadForm } from '@/lib/formType';
+import { pushOpenLeadForm, isGymPath } from '@/lib/formType';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { openModal } = useModal();
+  // Gym equipment is serviced in Dallas-Fort Worth only (owner, 2026-11-05).
+  const areaLabel = isGymPath(usePathname()) ? 'Dallas-Fort Worth' : SERVICE_AREA_LABEL;
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -38,7 +41,7 @@ export default function Header() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <MapPin size={14} />
-            <span>{SERVICE_AREA_LABEL}</span>
+            <span>{areaLabel}</span>
           </div>
           <div className="flex items-center gap-3">
             {SOCIAL_LINKS.map(({ href, type, label }) => (
@@ -201,7 +204,7 @@ export default function Header() {
               </div>
               <div className="flex items-center gap-2 text-gray-600 justify-center py-2 text-sm border-t mt-2 pt-2">
                 <MapPin size={16} />
-                <span className="text-center">{SERVICE_AREA_LABEL}</span>
+                <span className="text-center">{areaLabel}</span>
               </div>
             </div>
           </nav>
