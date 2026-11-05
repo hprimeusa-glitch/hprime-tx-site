@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { PHONE_DISPLAY, PHONE_NUMBER, BUSINESS_EMAIL, BUSINESS_NAME, BUSINESS_ADDRESS } from '@/lib/utils';
 import { appliances } from '@/lib/data/appliances';
 import FooterTrust from './FooterTrust';
+import { FooterServing, FooterAreaLinks } from './FooterAreas';
 
 export default function Footer() {
   const majorAppliances = appliances.slice(0, 15);
@@ -22,7 +23,7 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <h3 className="text-white text-xl font-bold mb-4">{BUSINESS_NAME}</h3>
-            <p className="text-sm mb-2">Serving Dallas-Fort Worth &amp; Houston</p>
+            <FooterServing />
             <p className="mb-2">
               <a href={`tel:${PHONE_NUMBER}`} className="hover:text-white transition">
                 {PHONE_DISPLAY}
@@ -69,16 +70,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Service Areas</h4>
             <ul className="space-y-2">
-              {serviceAreas.map((area) => (
-                <li key={area.name}>
-                  <Link
-                    href={`/service-areas#${area.slug}`}
-                    className="hover:text-white transition text-sm"
-                  >
-                    {area.name}
-                  </Link>
-                </li>
-              ))}
+              <FooterAreaLinks areas={serviceAreas} />
               <li className="pt-2">
                 <Link
                   href="/service-areas"
