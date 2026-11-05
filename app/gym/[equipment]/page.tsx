@@ -160,7 +160,7 @@ export default async function GymServicePage({ params }: Props) {
 
       <GymFinalCTA
         heading={`Need ${service.name} repair?`}
-        text="Call or book online. A technician comes to you in Dallas-Fort Worth or Houston, and you get an upfront quote before any work starts."
+        text="Call or book online. A technician comes to you in Dallas-Fort Worth, and you get an upfront quote before any work starts."
         trackingLabel={`gym_${service.slug}_final_cta`}
       />
     </>

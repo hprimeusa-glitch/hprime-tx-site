@@ -2,11 +2,11 @@
  * Gym equipment service pages for the Texas site (/gym/<slug>).
  *
  * Adapted from the hprime-gym.com site (hprime-gym-site lib/data/appliances.ts and
- * serviceContent.ts) and rewritten for Dallas-Fort Worth and Houston. No paragraph
+ * serviceContent.ts) and rewritten for Dallas-Fort Worth. No paragraph
  * is copied from hprime-gym.com, to keep the two sites from duplicating each other.
  *
- * Copy rules for this section: no prices or fee amounts (an upfront quote before
- * any work starts), no years in business, review counts, licensing, factory
+ * Copy rules for this section: the only fee amount is the $99 service call (owner,
+ * 2026-11-05); repairs get an upfront quote before any work starts, no years in business, review counts, licensing, factory
  * training or parts-origin claims, no superlatives, no out-of-state locations.
  *
  * Brands shown on each page come from equipmentBrandMap in lib/data/gymBrands.ts.
@@ -64,14 +64,14 @@ export const gymServices: GymService[] = [
     image: '/gym/equipment/treadmill.webp',
     imageAlt: 'Commercial treadmill on a gym floor',
     indexable: true,
-    title: 'Treadmill Repair in Dallas-Fort Worth & Houston | H-Prime',
+    title: 'Treadmill Repair in Dallas-Fort Worth | H-Prime',
     description:
-      'In-home and on-site treadmill repair across Dallas-Fort Worth and Houston: belt slipping, motor and controller faults, incline, consoles. Upfront quote before any work starts.',
-    h1: 'Treadmill Repair in Dallas-Fort Worth & Houston',
+      'In-home and on-site treadmill repair across Dallas-Fort Worth: belt slipping, motor and controller faults, incline, consoles. Upfront quote before any work starts.',
+    h1: 'Treadmill Repair in Dallas-Fort Worth',
     subtitle: 'Belts and decks, motors and controllers, incline, consoles. Home and commercial treadmills.',
     intro: [
       'Most treadmills give a warning before they quit. The belt catches for a split second under your stride, the deck gets louder, the console resets in the middle of a workout, or the incline stops answering the button. Catching it at that stage usually means a smaller repair than waiting until the machine refuses to start.',
-      'H-Prime sends a technician to your home, garage gym or building fitness room in the Dallas-Fort Worth area and in Houston. We find the cause on site, explain it in plain terms and give you an upfront quote before any work starts. If a part has to be ordered for your exact model, we tell you that on the visit.',
+      'H-Prime sends a technician to your home, garage gym or building fitness room in the Dallas-Fort Worth area. We find the cause on site, explain it in plain terms and give you an upfront quote before any work starts. If a part has to be ordered for your exact model, we tell you that on the visit.',
     ],
     problemsHeading: 'Treadmill problems we fix',
     problems: [
@@ -123,7 +123,7 @@ export const gymServices: GymService[] = [
       },
       {
         q: 'How much does treadmill repair cost?',
-        a: 'It depends on the cause, and a tensioning job and a motor controller are very different repairs. The technician diagnoses the treadmill first and gives you an upfront quote before any work starts. You decide whether to go ahead.',
+        a: 'The service call is $99 and covers the visit and the diagnosis. The repair itself depends on the cause, and a tensioning job and a motor controller are very different repairs, so the technician gives you an upfront quote before any work starts. You decide whether to go ahead.',
       },
       {
         q: 'Is it worth repairing an older treadmill?',
@@ -135,7 +135,7 @@ export const gymServices: GymService[] = [
       },
       {
         q: 'What areas do you cover for treadmill repair?',
-        a: 'The Dallas-Fort Worth area, including Fort Worth, Arlington, Keller, Southlake, Hurst, Euless, Bedford, Irving and Grand Prairie, and Houston including Bellaire.',
+        a: 'The Dallas-Fort Worth area, including Fort Worth, Arlington, Keller, Southlake, Hurst, Euless, Bedford, Irving and Grand Prairie.',
       },
     ],
   },
@@ -148,14 +148,14 @@ export const gymServices: GymService[] = [
     image: '/gym/equipment/elliptical.webp',
     imageAlt: 'Elliptical cross-trainer in a fitness room',
     indexable: false,
-    title: 'Elliptical Repair in Dallas-Fort Worth & Houston | H-Prime',
+    title: 'Elliptical Repair in Dallas-Fort Worth | H-Prime',
     description:
-      'Elliptical repair at your home or facility in Dallas-Fort Worth and Houston: noise, resistance, pedals, incline and consoles. Upfront quote before any work starts.',
-    h1: 'Elliptical Repair in Dallas-Fort Worth & Houston',
+      'Elliptical repair at your home or facility in Dallas-Fort Worth: noise, resistance, pedals, incline and consoles. Upfront quote before any work starts.',
+    h1: 'Elliptical Repair in Dallas-Fort Worth',
     subtitle: 'Noise, resistance, pedals and pivots, incline ramps, consoles.',
     intro: [
       'An elliptical has more moving joints than most cardio machines, and each one can start to squeak, click or wobble as it wears. Resistance problems are the other common call: the level changes on the screen but the stride feels the same.',
-      'We repair home and commercial ellipticals across Dallas-Fort Worth and Houston on site. You get the diagnosis and an upfront quote before any work starts.',
+      'We repair home and commercial ellipticals across Dallas-Fort Worth on site. You get the diagnosis and an upfront quote before any work starts.',
     ],
     problemsHeading: 'Elliptical problems we fix',
     problems: [
@@ -175,7 +175,7 @@ export const gymServices: GymService[] = [
     label: 'Elliptical',
     faqs: [
       { q: 'Can you fix an elliptical that squeaks no matter what I do?', a: 'Usually. Persistent squeaks come from a worn bushing or bearing in one of the pivots, and spraying lubricant on the outside rarely reaches it. We locate the joint and replace or service the worn part.' },
-      { q: 'How is the price set?', a: 'The technician diagnoses the machine first and gives you an upfront quote before any work starts.' },
+      { q: 'How is the price set?', a: 'The service call is $99. The technician diagnoses the machine first and gives you an upfront quote before any work starts.' },
       { q: 'Do you repair commercial ellipticals too?', a: 'Yes. We work on home machines and on commercial ellipticals in gyms, hotels, apartment fitness rooms and offices.' },
     ],
   },
@@ -188,14 +188,14 @@ export const gymServices: GymService[] = [
     image: '/gym/equipment/spin-bike.webp',
     imageAlt: 'Indoor cycling bike on a gym floor',
     indexable: false,
-    title: 'Spin & Exercise Bike Repair in DFW & Houston | H-Prime',
+    title: 'Spin & Exercise Bike Repair in DFW | H-Prime',
     description:
-      'Spin, upright and recumbent bike repair in Dallas-Fort Worth and Houston: resistance, flywheel noise, pedals, cranks and consoles. Upfront quote before any work starts.',
-    h1: 'Spin & Exercise Bike Repair in Dallas-Fort Worth & Houston',
+      'Spin, upright and recumbent bike repair in Dallas-Fort Worth: resistance, flywheel noise, pedals, cranks and consoles. Upfront quote before any work starts.',
+    h1: 'Spin & Exercise Bike Repair in Dallas-Fort Worth',
     subtitle: 'Indoor cycling, upright and recumbent bikes. Home and studio.',
     intro: [
       'Indoor bikes are simple machines that get ridden hard. When resistance stops engaging, the flywheel starts to knock or a pedal begins to click on every turn, the cause is usually one worn part rather than the whole bike.',
-      'We repair connected bikes, studio cycling bikes and upright and recumbent exercise bikes in homes and fitness rooms across Dallas-Fort Worth and Houston, with an upfront quote before any work starts.',
+      'We repair connected bikes, studio cycling bikes and upright and recumbent exercise bikes in homes and fitness rooms across Dallas-Fort Worth, with an upfront quote before any work starts.',
     ],
     problemsHeading: 'Bike problems we fix',
     problems: [
@@ -216,7 +216,7 @@ export const gymServices: GymService[] = [
     faqs: [
       { q: 'Do you work on connected bikes like Peloton?', a: 'Yes, we repair the mechanical and electrical side of connected bikes: resistance, flywheel, pedals, cranks, cables and power. Subscription and app problems are handled by the manufacturer.' },
       { q: 'Can you service a full cycling studio?', a: 'Yes. For studios and gyms we can work through several bikes in one visit. See our commercial gym equipment page for preventive maintenance.' },
-      { q: 'How is the price set?', a: 'We diagnose the bike first and give you an upfront quote before any work starts.' },
+      { q: 'How is the price set?', a: 'The service call is $99. We diagnose the bike first and give you an upfront quote before any work starts.' },
     ],
   },
   {
@@ -228,14 +228,14 @@ export const gymServices: GymService[] = [
     image: '/gym/equipment/rowing-machine.webp',
     imageAlt: 'Air rowing machine in a fitness room',
     indexable: false,
-    title: 'Rowing Machine Repair in Dallas-Fort Worth & Houston | H-Prime',
+    title: 'Rowing Machine Repair in Dallas-Fort Worth | H-Prime',
     description:
-      'Rowing machine repair in Dallas-Fort Worth and Houston: strap and handle return, seat rollers, resistance and monitors. Upfront quote before any work starts.',
-    h1: 'Rowing Machine Repair in Dallas-Fort Worth & Houston',
+      'Rowing machine repair in Dallas-Fort Worth: strap and handle return, seat rollers, resistance and monitors. Upfront quote before any work starts.',
+    h1: 'Rowing Machine Repair in Dallas-Fort Worth',
     subtitle: 'Air, water and magnetic rowers. Home and commercial.',
     intro: [
       'A rower that feels rough, a handle that will not return or a monitor that stops counting strokes takes the machine out of a workout fast. Most of these come down to the return mechanism, the seat rollers or a sensor.',
-      'We repair rowing machines in homes and fitness facilities across Dallas-Fort Worth and Houston, with an upfront quote before any work starts.',
+      'We repair rowing machines in homes and fitness facilities across Dallas-Fort Worth, with an upfront quote before any work starts.',
     ],
     problemsHeading: 'Rower problems we fix',
     problems: [
@@ -254,7 +254,7 @@ export const gymServices: GymService[] = [
     label: 'Rowing Machine',
     faqs: [
       { q: 'Do you repair water rowers?', a: 'Yes, along with air and magnetic rowers. Tell us the model when you book so the technician knows what to expect.' },
-      { q: 'How is the price set?', a: 'We diagnose the rower first and give you an upfront quote before any work starts.' },
+      { q: 'How is the price set?', a: 'The service call is $99. We diagnose the rower first and give you an upfront quote before any work starts.' },
     ],
   },
   {
@@ -266,14 +266,14 @@ export const gymServices: GymService[] = [
     image: '/gym/equipment/stair-machine.webp',
     imageAlt: 'Stair climber machine in a gym',
     indexable: false,
-    title: 'Stair Climber Repair in Dallas-Fort Worth & Houston | H-Prime',
+    title: 'Stair Climber Repair in Dallas-Fort Worth | H-Prime',
     description:
-      'Stair climber and stepper repair in Dallas-Fort Worth and Houston: steps, chains, drive motors, speed control and consoles. Upfront quote before any work starts.',
-    h1: 'Stair Climber Repair in Dallas-Fort Worth & Houston',
+      'Stair climber and stepper repair in Dallas-Fort Worth: steps, chains, drive motors, speed control and consoles. Upfront quote before any work starts.',
+    h1: 'Stair Climber Repair in Dallas-Fort Worth',
     subtitle: 'Stepmills, steppers and climbers. Commercial and home.',
     intro: [
       'Stair climbers carry a lot of weight on a short, repeating path, so chains, step axles and drive components wear on a predictable schedule. A step that catches or a machine that will not hold speed should come out of use until it is checked.',
-      'We repair stair machines in gyms, fitness rooms and homes across Dallas-Fort Worth and Houston, with an upfront quote before any work starts.',
+      'We repair stair machines in gyms, fitness rooms and homes across Dallas-Fort Worth, with an upfront quote before any work starts.',
     ],
     problemsHeading: 'Stair machine problems we fix',
     problems: [
@@ -291,7 +291,7 @@ export const gymServices: GymService[] = [
     label: 'Stair Climber',
     faqs: [
       { q: 'Do you repair StairMaster machines?', a: 'Yes, along with stepmills and steppers from Life Fitness, Matrix, Precor and other brands.' },
-      { q: 'How is the price set?', a: 'We diagnose the machine first and give you an upfront quote before any work starts.' },
+      { q: 'How is the price set?', a: 'The service call is $99. We diagnose the machine first and give you an upfront quote before any work starts.' },
     ],
   },
   {
@@ -303,14 +303,14 @@ export const gymServices: GymService[] = [
     image: '/gym/equipment/weight-machine.webp',
     imageAlt: 'Multi-station weight machine in a home gym',
     indexable: false,
-    title: 'Weight Machine Repair in Dallas-Fort Worth & Houston | H-Prime',
+    title: 'Weight Machine Repair in Dallas-Fort Worth | H-Prime',
     description:
-      'Weight machine and home gym repair in Dallas-Fort Worth and Houston: cables, pulleys, stacks, guide rods and pins. Upfront quote before any work starts.',
-    h1: 'Weight Machine & Home Gym Repair in Dallas-Fort Worth & Houston',
+      'Weight machine and home gym repair in Dallas-Fort Worth: cables, pulleys, stacks, guide rods and pins. Upfront quote before any work starts.',
+    h1: 'Weight Machine & Home Gym Repair in Dallas-Fort Worth',
     subtitle: 'Selectorized machines, cable stations and home gyms.',
     intro: [
       'Strength equipment rarely stops working outright. It wears: cables fray, pulleys get noisy, the weight stack drags on its guide rods and pins stop seating cleanly. A frayed cable is a safety problem, not a cosmetic one, and the machine should not be used until it is replaced.',
-      'We service and repair weight machines and home gyms across Dallas-Fort Worth and Houston, with an upfront quote before any work starts.',
+      'We service and repair weight machines and home gyms across Dallas-Fort Worth, with an upfront quote before any work starts.',
     ],
     problemsHeading: 'Strength equipment problems we fix',
     problems: [
@@ -329,7 +329,7 @@ export const gymServices: GymService[] = [
     label: 'Weight Machine',
     faqs: [
       { q: 'Can you replace cables on any home gym?', a: 'On most of them. Cable length and end fittings vary by model, so send us the brand and model when you book.' },
-      { q: 'How is the price set?', a: 'We inspect the machine first and give you an upfront quote before any work starts.' },
+      { q: 'How is the price set?', a: 'The service call is $99. We inspect the machine first and give you an upfront quote before any work starts.' },
     ],
   },
 ];

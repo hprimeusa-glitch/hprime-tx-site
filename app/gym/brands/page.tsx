@@ -8,9 +8,9 @@ import { gymMetadata, gymBreadcrumbSchema } from '@/lib/seo/gymSeo';
 
 export const metadata = gymMetadata({
   path: '/gym/brands',
-  title: 'Gym Equipment Brands We Repair in DFW & Houston | H-Prime',
+  title: 'Gym Equipment Brands We Repair in DFW | H-Prime',
   description:
-    'Fitness equipment brands H-Prime repairs across Dallas-Fort Worth and Houston: NordicTrack, Peloton, Life Fitness, Precor, Concept2 and more. Upfront quote before any work starts.',
+    'Fitness equipment brands H-Prime repairs across Dallas-Fort Worth: NordicTrack, Peloton, Life Fitness, Precor, Concept2 and more. Upfront quote before any work starts.',
   indexable: false,
 });
 
@@ -33,7 +33,7 @@ export default function GymBrandsIndexPage() {
           </p>
           <h1 className="mb-4 text-3xl font-bold leading-tight md:text-4xl lg:text-5xl">Gym Equipment Brands We Repair</h1>
           <p className="max-w-2xl text-lg text-gray-200 md:text-xl">
-            Home and commercial fitness equipment across Dallas-Fort Worth and Houston. Pick your brand to see what we fix.
+            Home and commercial fitness equipment across Dallas-Fort Worth. Pick your brand to see what we fix.
           </p>
         </div>
       </section>

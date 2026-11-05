@@ -63,7 +63,7 @@ export default async function GymBrandEquipmentPage({ params }: Props) {
       />
 
       <GymHero
-        eyebrow={`${service.cardTitle} · Dallas-Fort Worth & Houston`}
+        eyebrow={`${service.cardTitle} · Dallas-Fort Worth`}
         title={copy.h1}
         subtitle={copy.subtitle}
         image={brandEquipmentImage(brand.slug, service.slug)}
@@ -186,7 +186,7 @@ export default async function GymBrandEquipmentPage({ params }: Props) {
 
       <GymFinalCTA
         heading={`Need ${brand.name} ${service.label.toLowerCase()} repair?`}
-        text="Call or book online. A technician comes to you in Dallas-Fort Worth or Houston, and you get an upfront quote before any work starts."
+        text="Call or book online. A technician comes to you in Dallas-Fort Worth, and you get an upfront quote before any work starts."
         trackingLabel={`gym_combo_${brand.slug}_${service.slug}_final_cta`}
       />
     </>

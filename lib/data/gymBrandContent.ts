@@ -1,7 +1,7 @@
 /**
  * Templated copy for /gym/brands/<brand> and /gym/brands/<brand>/<equipment>-repair.
  * All of these pages are noindex,follow: they exist for ads and internal links.
- * Same copy rules as the rest of /gym: no prices, no track-record, licensing,
+ * Same copy rules as the rest of /gym: only the $99 service call, no track-record, licensing,
  * factory training or parts-origin claims, no superlatives, no em dashes.
  */
 
@@ -9,7 +9,7 @@ import { gymServices, type GymFaq, type GymProblem, type GymService } from './gy
 import { getEquipmentForBrand, gymBrandNotes, gymBrandModels, type GymBrand } from './gymBrands';
 
 const AREA_LIST =
-  'Fort Worth, Arlington, Keller, Southlake, Hurst, Euless, Bedford, Irving, Grand Prairie and the rest of the Dallas-Fort Worth area, plus Houston and Bellaire';
+  'Fort Worth, Arlington, Keller, Southlake, Hurst, Euless, Bedford, Irving, Grand Prairie and the rest of the Dallas-Fort Worth area';
 
 const article = (word: string) => (/^[aeiou]/i.test(word) ? 'An' : 'A');
 
@@ -48,7 +48,7 @@ export function brandPageCopy(brand: GymBrand) {
     },
     {
       q: `How much does ${brand.name} repair cost?`,
-      a: 'It depends on the machine and what failed. The technician diagnoses it on site and gives you an upfront quote before any work starts, and you decide whether to go ahead.',
+      a: 'The service call is $99 and covers the visit and the diagnosis. The repair itself depends on the machine and what failed, so the technician gives you an upfront quote before any work starts, and you decide whether to go ahead.',
     },
     {
       q: `Which ${brand.name} machines do you repair?`,
@@ -61,13 +61,13 @@ export function brandPageCopy(brand: GymBrand) {
   ];
 
   return {
-    title: `${brand.name} Repair in Dallas-Fort Worth & Houston | H-Prime`,
-    description: `Independent ${brand.name} repair for ${kinds} at your home or facility in Dallas-Fort Worth and Houston. Upfront quote before any work starts.`,
-    h1: `${brand.name} Repair in Dallas-Fort Worth & Houston`,
+    title: `${brand.name} Repair in Dallas-Fort Worth | H-Prime`,
+    description: `Independent ${brand.name} repair for ${kinds} at your home or facility in Dallas-Fort Worth. Upfront quote before any work starts.`,
+    h1: `${brand.name} Repair in Dallas-Fort Worth`,
     subtitle: `${brand.name} ${kinds} repaired at your home, garage gym or fitness room.`,
     intro: [
       `When ${article(brand.name).toLowerCase()} ${brand.name} machine stops working the way it should, the cause is usually one worn or failed part rather than the whole machine. We come to you, find the fault on site and explain what it takes to fix it.`,
-      `H-Prime repairs ${brand.name} ${kinds} across Dallas-Fort Worth and Houston. Every visit starts with a diagnosis and an upfront quote before any work starts.`,
+      `H-Prime repairs ${brand.name} ${kinds} across Dallas-Fort Worth. Every visit starts with a diagnosis and an upfront quote before any work starts.`,
     ],
     services,
     problems,
@@ -85,11 +85,11 @@ export function brandEquipmentCopy(brand: GymBrand, service: GymService) {
   const faqs: GymFaq[] = [
     {
       q: `Can you repair my ${what} at home?`,
-      a: `Yes. We come to your home, garage gym or building fitness room anywhere in Dallas-Fort Worth or Houston, so there is no need to move the machine.`,
+      a: `Yes. We come to your home, garage gym or building fitness room anywhere in Dallas-Fort Worth, so there is no need to move the machine.`,
     },
     {
       q: `How much does ${what} repair cost?`,
-      a: 'The technician diagnoses the machine first and gives you an upfront quote before any work starts. Nothing is done until you agree.',
+      a: 'The service call is $99 and covers the visit and the diagnosis. The technician gives you an upfront quote for the repair before any work starts. Nothing is done until you agree.',
     },
     {
       q: 'What should I have ready when I book?',
@@ -102,16 +102,16 @@ export function brandEquipmentCopy(brand: GymBrand, service: GymService) {
   ];
 
   return {
-    title: `${brand.name} ${service.label} Repair in DFW & Houston | H-Prime`,
-    description: `${brand.name} ${service.label.toLowerCase()} repair at your home or facility in Dallas-Fort Worth and Houston: ${service.problems
+    title: `${brand.name} ${service.label} Repair in DFW | H-Prime`,
+    description: `${brand.name} ${service.label.toLowerCase()} repair at your home or facility in Dallas-Fort Worth: ${service.problems
       .slice(0, 3)
       .map((p) => p.title.toLowerCase())
       .join(', ')}. Upfront quote before any work starts.`,
-    h1: `${brand.name} ${service.label} Repair in Dallas-Fort Worth & Houston`,
+    h1: `${brand.name} ${service.label} Repair in Dallas-Fort Worth`,
     subtitle: `On-site repair for ${brand.name} ${plural(service)}, home and commercial.`,
     intro: [
       `${article(brand.name)} ${what} that has started to act up is usually telling you which part is wearing. We diagnose it where it sits, explain the cause in plain terms and give you an upfront quote before any work starts.`,
-      `We repair ${brand.name} ${plural(service)} in homes and fitness rooms across Dallas-Fort Worth and Houston. If a part has to be ordered for your exact model, we tell you on the visit and book the return.`,
+      `We repair ${brand.name} ${plural(service)} in homes and fitness rooms across Dallas-Fort Worth. If a part has to be ordered for your exact model, we tell you on the visit and book the return.`,
     ],
     notes,
     faqs,

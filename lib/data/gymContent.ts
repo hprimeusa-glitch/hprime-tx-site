@@ -1,17 +1,17 @@
 /**
  * Copy for the /gym hub and /gym/commercial on the Texas site.
- * Same rules as lib/data/gymServices.ts: no prices, no track-record or licensing
- * claims, no superlatives, Dallas-Fort Worth and Houston only.
+ * Same rules as lib/data/gymServices.ts: the only price is the $99 service call, no track-record or licensing
+ * claims, no superlatives, Dallas-Fort Worth only.
  */
 
 import type { GymFaq } from './gymServices';
 
-export const GYM_AREA = 'Dallas-Fort Worth & Houston';
+export const GYM_AREA = 'Dallas-Fort Worth';
 
 export const gymTrustPoints = [
+  '$99 service call',
   'Upfront quote before any work starts',
   'Home and commercial equipment',
-  'Cardio and strength machines',
   'We come to you',
 ];
 
@@ -26,7 +26,7 @@ export const gymProcess = [
   },
   {
     title: 'Diagnosis and upfront quote',
-    text: 'We find the cause on site and give you a clear quote before any work starts. No surprises on the invoice.',
+    text: 'The $99 service call covers the visit and the diagnosis. We find the cause on site and give you a clear quote before any work starts. No surprises on the invoice.',
   },
   {
     title: 'Repair',
@@ -35,7 +35,7 @@ export const gymProcess = [
 ];
 
 export const gymHubIntro = [
-  'Treadmills, ellipticals, bikes, rowers, stair climbers and strength machines all wear in their own way, and most of them are too heavy to haul anywhere for service. H-Prime brings the repair to you, in homes and garage gyms and in the fitness rooms of apartments, hotels, offices and gyms across Dallas-Fort Worth and Houston.',
+  'Treadmills, ellipticals, bikes, rowers, stair climbers and strength machines all wear in their own way, and most of them are too heavy to haul anywhere for service. H-Prime brings the repair to you, in homes and garage gyms and in the fitness rooms of apartments, hotels, offices and gyms across Dallas-Fort Worth.',
   'Every visit starts with a diagnosis. You hear what is wrong, what it takes to fix it and an upfront quote before any work starts.',
 ];
 
@@ -50,11 +50,11 @@ export const gymHubFaqs: GymFaq[] = [
   },
   {
     q: 'How much does gym equipment repair cost?',
-    a: 'It depends on the machine and the fault. The technician diagnoses the equipment first and gives you an upfront quote before any work starts, so you decide before anything is done.',
+    a: 'The service call is $99 and covers the visit and the diagnosis. The repair itself depends on the machine and the fault, so the technician gives you an upfront quote before any work starts and you decide before anything is done.',
   },
   {
     q: 'Which areas do you serve?',
-    a: 'The Dallas-Fort Worth area, including Fort Worth, Arlington, Keller, Southlake, Hurst, Euless, Bedford, Irving and Grand Prairie, and Houston including Bellaire.',
+    a: 'The Dallas-Fort Worth area, including Fort Worth, Arlington, Keller, Southlake, Hurst, Euless, Bedford, Irving and Grand Prairie.',
   },
   {
     q: 'Do you work with gyms, hotels and apartment buildings?',
@@ -70,7 +70,7 @@ export const gymHubFaqs: GymFaq[] = [
 
 export const commercialGymIntro = [
   'A machine in a shared fitness room works a much longer day than one at home, and when it goes down the problem lands on whoever runs the room: an out-of-order sign, a complaint at the front desk, and a safety question if someone uses it anyway.',
-  'H-Prime repairs and maintains commercial cardio and strength equipment on site across Dallas-Fort Worth and Houston. We work with property managers, gym owners and facility teams, and give an upfront quote before any work starts.',
+  'H-Prime repairs and maintains commercial cardio and strength equipment on site across Dallas-Fort Worth. We work with property managers, gym owners and facility teams, and give an upfront quote before any work starts.',
 ];
 
 export const commercialGymClients = [
@@ -122,7 +122,7 @@ export const commercialGymFaqs: GymFaq[] = [
   },
   {
     q: 'How is commercial work priced?',
-    a: 'Every repair is diagnosed first and quoted upfront before any work starts. For maintenance visits we agree the scope with you in advance.',
+    a: 'The service call is $99 and covers the visit and the diagnosis. Every repair is quoted upfront before any work starts. For maintenance visits we agree the scope with you in advance.',
   },
   {
     q: 'Which brands do you work on?',

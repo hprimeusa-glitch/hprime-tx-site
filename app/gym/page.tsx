@@ -12,9 +12,9 @@ import { gymBrands } from '@/lib/data/gymBrands';
 import { gymHubIntro, gymHubFaqs } from '@/lib/data/gymContent';
 import { gymMetadata, gymServiceSchema, gymFaqSchema, gymBreadcrumbSchema } from '@/lib/seo/gymSeo';
 
-const TITLE = 'Gym Equipment Repair in Dallas-Fort Worth & Houston | H-Prime';
+const TITLE = 'Gym Equipment Repair in Dallas-Fort Worth | H-Prime';
 const DESCRIPTION =
-  'On-site repair for treadmills, ellipticals, bikes, rowers, stair climbers and weight machines in Dallas-Fort Worth and Houston. Home and commercial. Upfront quote before any work starts.';
+  'On-site repair for treadmills, ellipticals, bikes, rowers, stair climbers and weight machines in Dallas-Fort Worth. Home and commercial. Upfront quote before any work starts.';
 
 export const metadata = gymMetadata({ path: '/gym', title: TITLE, description: DESCRIPTION, indexable: true });
 
@@ -34,7 +34,7 @@ export default function GymHubPage() {
 
       <GymHero
         eyebrow="Home and commercial fitness equipment"
-        title="Gym Equipment Repair in Dallas-Fort Worth & Houston"
+        title="Gym Equipment Repair in Dallas-Fort Worth"
         subtitle="Treadmills, ellipticals, bikes, rowers, stair climbers and strength machines. Repaired at your home or facility."
         image="/gym/equipment/treadmill.webp"
         imageAlt="Treadmill in a gym, one of the machines H-Prime repairs"
@@ -89,7 +89,7 @@ export default function GymHubPage() {
 
       <GymFinalCTA
         heading="Machine down? Let's get it running."
-        text="Call or book online. A technician comes to you anywhere in Dallas-Fort Worth or Houston, and you get an upfront quote before any work starts."
+        text="Call or book online. A technician comes to you anywhere in Dallas-Fort Worth, and you get an upfront quote before any work starts."
         trackingLabel="gym_final_cta"
       />
     </>

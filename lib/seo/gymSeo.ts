@@ -50,7 +50,6 @@ const AREA_SERVED = [
   { '@type': 'City', name: 'Fort Worth', containedInPlace: { '@type': 'State', name: 'Texas' } },
   { '@type': 'City', name: 'Arlington', containedInPlace: { '@type': 'State', name: 'Texas' } },
   { '@type': 'City', name: 'Irving', containedInPlace: { '@type': 'State', name: 'Texas' } },
-  { '@type': 'City', name: 'Houston', containedInPlace: { '@type': 'State', name: 'Texas' } },
 ];
 
 export function gymServiceSchema(params: { path: string; name: string; serviceType: string; description: string }) {

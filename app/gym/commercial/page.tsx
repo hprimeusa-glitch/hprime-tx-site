@@ -18,9 +18,9 @@ import {
 } from '@/lib/data/gymContent';
 import { gymMetadata, gymServiceSchema, gymFaqSchema, gymBreadcrumbSchema } from '@/lib/seo/gymSeo';
 
-const TITLE = 'Commercial Gym Equipment Repair in DFW & Houston | H-Prime';
+const TITLE = 'Commercial Gym Equipment Repair in DFW | H-Prime';
 const DESCRIPTION =
-  'Commercial gym equipment repair and preventive maintenance for gyms, hotels, apartments and offices in Dallas-Fort Worth and Houston. Cardio and strength. Upfront quotes.';
+  'Commercial gym equipment repair and preventive maintenance for gyms, hotels, apartments and offices in Dallas-Fort Worth. Cardio and strength. Upfront quotes.';
 
 export const metadata = gymMetadata({ path: '/gym/commercial', title: TITLE, description: DESCRIPTION, indexable: true });
 
@@ -53,7 +53,7 @@ export default function CommercialGymPage() {
 
       <GymHero
         eyebrow={`Commercial fitness equipment · ${GYM_AREA}`}
-        title="Commercial Gym Equipment Repair in Dallas-Fort Worth & Houston"
+        title="Commercial Gym Equipment Repair in Dallas-Fort Worth"
         subtitle="For gyms, hotels, apartment communities and offices. Cardio and strength, repairs and preventive maintenance."
         image="/gym/equipment/commercial-treadmill.webp"
         imageAlt="Commercial treadmill in a fitness center"
@@ -179,7 +179,7 @@ export default function CommercialGymPage() {
 
       <GymFinalCTA
         heading="Get your fitness room back in service"
-        text="Call or book online for a repair or a maintenance visit anywhere in Dallas-Fort Worth or Houston. Upfront quote before any work starts."
+        text="Call or book online for a repair or a maintenance visit anywhere in Dallas-Fort Worth. Upfront quote before any work starts."
         trackingLabel="gym_commercial_final_cta"
       />
     </>
