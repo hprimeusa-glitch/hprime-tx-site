@@ -43,11 +43,12 @@ export const BUSINESSES: Business[] = [
     name: 'Fitness Equipment Repair',
     tagline: 'Treadmills, ellipticals & gym machines — home and commercial',
     image: '/assets/hub/gym.webp',
-    url: 'https://www.hprime-gym.com',
-    phone: '+17207066650',
-    phoneDisplay: '(720) 706-6650',
+    // Texas gym section on this site, not the Denver gym site with its (720) number.
+    url: 'https://tx.h-prime-co.com/gym',
+    phone: '+18177996313',
+    phoneDisplay: '(817) 799-6313',
     // /start is not used in ads, so gym AWCC tracking here is not needed — show the
-    // Call button for convenience. (Ad-attributed gym calls happen on hprime-gym.com.)
+    // Call button for convenience.
     showCall: true,
     accent: '#1B2A4A',
     enabled: true,

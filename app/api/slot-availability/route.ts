@@ -5,10 +5,12 @@ import {
   SlotStatus,
   TIME_SLOT_DEFS,
   businessNow,
+  closedRangeFor,
   firstBookableDate,
   isSlotOpen,
   isValidDateISO,
   slotLabelFromKey,
+  upcomingClosures,
 } from '@/lib/booking';
 import { parseFormType } from '@/lib/formType';
 
@@ -18,7 +20,7 @@ export async function GET(request: NextRequest) {
   const now = businessNow();
   // ?form=gym reads the gym counter; anything else reads the appliance counter.
   const formType = parseFormType(request.nextUrl.searchParams.get('form'));
-  const minDate = firstBookableDate(now);
+  const minDate = firstBookableDate(now, formType);
 
   // No date yet: the form only needs the earliest day it may offer.
   const requested = request.nextUrl.searchParams.get('date');
@@ -31,7 +33,7 @@ export async function GET(request: NextRequest) {
   // counter says.
   const status: Record<string, SlotStatus> = {};
   for (const slot of TIME_SLOT_DEFS) {
-    status[slot.label] = isSlotOpen(date, slot.label, now) ? 'open' : 'closed';
+    status[slot.label] = isSlotOpen(date, slot.label, now, formType) ? 'open' : 'closed';
   }
 
   try {
@@ -53,5 +55,14 @@ export async function GET(request: NextRequest) {
     console.error('[SLOTS] availability check failed, failing open:', error);
   }
 
-  return NextResponse.json({ date, today: now.date, minDate, status });
+  // dayClosed: label of the closure covering this date (time off, holiday), or null.
+  // closures: labels of closures still ahead, for the hint under the date field.
+  return NextResponse.json({
+    date,
+    today: now.date,
+    minDate,
+    status,
+    dayClosed: closedRangeFor(date, formType)?.label ?? null,
+    closures: upcomingClosures(now.date, formType).map((range) => range.label),
+  });
 }

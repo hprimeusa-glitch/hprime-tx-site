@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PatternFormat } from 'react-number-format';
-import { SlotStatus, TIME_SLOT_DEFS, businessNow, isSlotOpen, isWeekendISO } from '@/lib/booking';
+import { SlotStatus, TIME_SLOT_DEFS, businessNow, closedRangeFor, isSlotOpen, isWeekendISO } from '@/lib/booking';
 import { FormType, LEAD_EVENTS } from '@/lib/formType';
 
 // The free-text field is the only visible difference between the two forms.
@@ -25,7 +25,8 @@ const ISSUE_FIELD: Record<FormType, { label: string; placeholder: string }> = {
 // Texas books Monday–Friday only. A native <input type="date"> can't grey out weekends,
 // so we reject Sat/Sun in validation and show a hint. Dates are judged in the shop's
 // timezone, not the visitor's, so a customer two timezones away sees the same day.
-const formSchema = z.object({
+// Closed days (lib/booking CLOSED_DATE_RANGES) differ per form, hence a schema per form type.
+const makeFormSchema = (formType: FormType) => z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   phone: z
@@ -49,7 +50,16 @@ const formSchema = z.object({
     }),
   preferredTimeSlot: z.string().min(1, 'Please select a time slot'),
 }).superRefine((data, ctx) => {
-  if (data.preferredDate && data.preferredTimeSlot && !isSlotOpen(data.preferredDate, data.preferredTimeSlot)) {
+  const closed = data.preferredDate ? closedRangeFor(data.preferredDate, formType) : null;
+  if (closed) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['preferredDate'],
+      message: `Online booking is closed ${closed.label}. Please pick another date or call us.`,
+    });
+    return;
+  }
+  if (data.preferredDate && data.preferredTimeSlot && !isSlotOpen(data.preferredDate, data.preferredTimeSlot, businessNow(), formType)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['preferredTimeSlot'],
@@ -58,7 +68,7 @@ const formSchema = z.object({
   }
 });
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<ReturnType<typeof makeFormSchema>>;
 
 const STEP_1_FIELDS: Array<keyof FormData> = ['firstName', 'lastName', 'phone', 'email', 'message'];
 
@@ -73,8 +83,12 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'slot_full' | 'slot_closed'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'slot_full' | 'slot_closed' | 'day_closed'>('idle');
   const [slotStatus, setSlotStatus] = useState<Record<string, SlotStatus> | null>(null);
+  // From the server: the closure covering the picked date, and closures still ahead.
+  const [dayClosed, setDayClosed] = useState<string | null>(null);
+  const [closures, setClosures] = useState<string[]>([]);
+  const formSchema = useMemo(() => makeFormSchema(formType), [formType]);
   // The earliest day still worth offering, from the server: today while a window is
   // open, the next weekday once they have all started. Empty until it loads, so a
   // statically cached page never ships a stale date.
@@ -109,6 +123,8 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
         if (cancelled) return;
         if (json?.minDate) setMinDate(json.minDate);
         setSlotStatus(hasDate ? json?.status ?? null : null);
+        setDayClosed(hasDate ? json?.dayClosed ?? null : null);
+        if (Array.isArray(json?.closures)) setClosures(json.closures);
       })
       .catch(() => {
         if (!cancelled) setSlotStatus(null);
@@ -193,7 +209,9 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
         router.push(`/thank-you-page?${tyParams.toString()}`);
       } else if (response.status === 409) {
         const body = await response.json().catch(() => null);
-        setSubmitStatus(body?.reason === 'closed' ? 'slot_closed' : 'slot_full');
+        setSubmitStatus(
+          body?.reason === 'day_closed' ? 'day_closed' : body?.reason === 'closed' ? 'slot_closed' : 'slot_full'
+        );
         setAvailabilityRefresh((k) => k + 1);
       } else {
         setSubmitStatus('error');
@@ -343,6 +361,9 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
             className={inputCls}
           />
           <p className="text-gray-500 text-xs mt-0.5">We book Monday–Friday, 8 AM – 5 PM.</p>
+          {closures.map((label) => (
+            <p key={label} className="text-amber-600 text-xs mt-0.5">No online booking {label}.</p>
+          ))}
           {errors.preferredDate && <p className={errorCls}>{errors.preferredDate.message}</p>}
         </div>
         <div>
@@ -357,7 +378,13 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
             {TIME_SLOT_DEFS.map(({ label }) => {
               const status = slotStatus?.[label] ?? 'open';
               const suffix =
-                status === 'full' ? ' — fully booked' : status === 'closed' ? ' — too late today' : '';
+                status === 'full'
+                  ? ' — fully booked'
+                  : status === 'closed'
+                    ? dayClosed
+                      ? ' — closed'
+                      : ' — too late today'
+                    : '';
               return (
                 <option key={label} value={label} disabled={status !== 'open'}>
                   {label}{suffix}
@@ -368,7 +395,9 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
           {errors.preferredTimeSlot && <p className={errorCls}>{errors.preferredTimeSlot.message}</p>}
           {noSlotsLeft && (
             <p className="text-gray-500 text-xs mt-0.5">
-              Nothing left for this day — pick the next one, or call us.
+              {dayClosed
+                ? `Online booking is closed ${dayClosed} — pick another day, or call us.`
+                : 'Nothing left for this day — pick the next one, or call us.'}
             </p>
           )}
         </div>
@@ -401,6 +430,12 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
       {submitStatus === 'slot_full' && (
         <div className="bg-amber-100 border border-amber-400 text-amber-800 px-3 py-2 rounded text-sm">
           Sorry, this time slot is already fully booked for the selected date. Please pick another time slot or date.
+        </div>
+      )}
+
+      {submitStatus === 'day_closed' && (
+        <div className="bg-amber-100 border border-amber-400 text-amber-800 px-3 py-2 rounded text-sm">
+          Online booking is closed for this date. Please pick another day, or call us.
         </div>
       )}
 

@@ -80,6 +80,43 @@ export const addDaysISO = (dateISO: string, days: number): string => {
   return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
 };
 
+export type BookingForm = 'appliance' | 'gym';
+
+export interface ClosedRange {
+  /** first closed day, YYYY-MM-DD in BUSINESS_TZ */
+  from: string;
+  /** last closed day, inclusive */
+  to: string;
+  /** shown to the customer, e.g. "Nov 30 – Dec 4" */
+  label: string;
+  /** which form the closure applies to */
+  forms: readonly BookingForm[];
+}
+
+/**
+ * Days with no online booking (time off, holidays). Phone calls still work.
+ * To close days add a range; to reopen remove it. Past ranges are harmless.
+ */
+export const CLOSED_DATE_RANGES: readonly ClosedRange[] = [
+  // Taras 2026-11-06: gym online booking closed Mon Nov 30 – Fri Dec 4.
+  { from: '2026-11-30', to: '2026-12-04', label: 'Nov 30 – Dec 4', forms: ['gym'] },
+];
+
+export const closedRangeFor = (
+  dateISO: string,
+  formType: BookingForm = 'appliance'
+): ClosedRange | null =>
+  CLOSED_DATE_RANGES.find(
+    (range) => range.forms.includes(formType) && dateISO >= range.from && dateISO <= range.to
+  ) ?? null;
+
+/** Closures that still matter today, for the hint under the date field. */
+export const upcomingClosures = (
+  today: string,
+  formType: BookingForm = 'appliance'
+): ClosedRange[] =>
+  CLOSED_DATE_RANGES.filter((range) => range.forms.includes(formType) && range.to >= today);
+
 /**
  * Can this window still be booked on this date? Capacity is checked separately
  * against the counter DB — this is the calendar side only.
@@ -87,27 +124,35 @@ export const addDaysISO = (dateISO: string, days: number): string => {
 export function isSlotOpen(
   dateISO: string,
   slotLabel: string,
-  now: BusinessNow = businessNow()
+  now: BusinessNow = businessNow(),
+  formType: BookingForm = 'appliance'
 ): boolean {
   const slot = TIME_SLOT_DEFS.find((def) => def.label === slotLabel);
   if (!slot) return false;
   if (!isValidDateISO(dateISO) || isWeekendISO(dateISO)) return false;
+  if (closedRangeFor(dateISO, formType)) return false;
   if (dateISO < now.date) return false;
   if (dateISO > now.date) return true;
   return slot.startMinutes - MIN_LEAD_MINUTES >= now.minutes;
 }
 
-export const hasOpenSlots = (dateISO: string, now: BusinessNow = businessNow()): boolean =>
-  TIME_SLOT_DEFS.some((slot) => isSlotOpen(dateISO, slot.label, now));
+export const hasOpenSlots = (
+  dateISO: string,
+  now: BusinessNow = businessNow(),
+  formType: BookingForm = 'appliance'
+): boolean => TIME_SLOT_DEFS.some((slot) => isSlotOpen(dateISO, slot.label, now, formType));
 
 /**
  * Earliest date still worth offering: today while a window is open, otherwise
  * the next weekday. Used as the `min` of the date picker.
  */
-export function firstBookableDate(now: BusinessNow = businessNow()): string {
+export function firstBookableDate(
+  now: BusinessNow = businessNow(),
+  formType: BookingForm = 'appliance'
+): string {
   let date = now.date;
-  for (let i = 0; i < 14; i += 1) {
-    if (hasOpenSlots(date, now)) return date;
+  for (let i = 0; i < 30; i += 1) {
+    if (hasOpenSlots(date, now, formType)) return date;
     date = addDaysISO(date, 1);
   }
   return date;

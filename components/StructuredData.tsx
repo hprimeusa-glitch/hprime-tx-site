@@ -89,7 +89,8 @@ export function LocalBusinessSchema({ name, city, county, service }: LocalBusine
       'https://www.facebook.com/HPrimeApplaincerepaire',
       'https://www.instagram.com/_hprime_',
       'https://www.youtube.com/@MeToTarass',
-      'https://www.google.com/maps/search/?api=1&query=H-Prime%20Appliance%20Repair&query_place_id=ChIJ6dWdU5D8_WgRf-crfXWkxY8',
+      // Texas Business Profile (H Prime Repair and Service), not the Denver one.
+      'https://maps.google.com/?cid=13822383714677018571',
     ],
     ...(service && {
       hasOfferCatalog: {

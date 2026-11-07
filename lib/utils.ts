@@ -25,11 +25,11 @@ export const BUSINESS_ADDRESS = 'Fort Worth, TX';
 // Houston visitor should not read the pin as "Fort Worth only".
 export const SERVICE_AREA_LABEL = 'Dallas-Fort Worth & Houston';
 // Live GBP values (checked 2026-09-20, place_id ChIJ6dWdU5D8_WgRf-crfXWkxY8).
-// Texas has no profile of its own: these are the company's Denver GBP figures.
+// These are the company's Denver GBP figures. Never link to that profile from this
+// site: Texas customers who opened it took the company for a Denver one (2026-11-07).
 // Single source of truth: lib/seo/schema.ts imports these, never redeclares them.
 export const GOOGLE_RATING = 4.9;
 export const GOOGLE_REVIEW_COUNT = '218';
-export const GOOGLE_BUSINESS_PROFILE_URL = 'https://search.google.com/local/reviews?placeid=ChIJ6dWdU5D8_WgRf-crfXWkxY8';
 
 
 // Professional icons (Lucide React style)

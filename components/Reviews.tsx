@@ -1,6 +1,5 @@
 import { Star } from 'lucide-react';
 import { reviews } from '@/lib/data/reviews';
-import { GOOGLE_BUSINESS_PROFILE_URL } from '@/lib/utils';
 
 // Google-style avatar colors (different colors for each reviewer)
 const avatarColors = [
@@ -22,20 +21,11 @@ export default function Reviews() {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             What Our Customers Say
           </h2>
+          {/* No "View all reviews on Google" link: it opened the Denver profile and Texas
+              customers took the company for a Denver one (Taras, 2026-11-07). */}
           <p className="text-xl text-gray-600 mb-4">
             Real reviews from Google Business Profile
           </p>
-          <a
-            href={GOOGLE_BUSINESS_PROFILE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
-          >
-            View all reviews on Google
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">

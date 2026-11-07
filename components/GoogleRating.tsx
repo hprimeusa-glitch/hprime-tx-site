@@ -3,12 +3,9 @@ import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT } from '@/lib/utils';
 
 export default function GoogleRating() {
   return (
-    <a
-      href="https://share.google/xoQRu9vacRUPORGOA"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-3 bg-white px-5 py-3 rounded-full shadow-md hover:shadow-lg transition-all border border-gray-200"
-    >
+    // Not a link: the only profile with these reviews is the Denver one, and Texas
+    // visitors who opened it read the company as Denver-only (Taras, 2026-11-07).
+    <div className="inline-flex items-center gap-3 bg-white px-5 py-3 rounded-full shadow-md border border-gray-200">
       {/* Google Logo */}
       <svg className="w-6 h-6" viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -32,7 +29,7 @@ export default function GoogleRating() {
           Based on {GOOGLE_REVIEW_COUNT}+ reviews
         </div>
       </div>
-    </a>
+    </div>
   );
 }
 

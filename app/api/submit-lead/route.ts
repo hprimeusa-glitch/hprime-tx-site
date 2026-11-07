@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
-import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, isSlotOpen, isValidDateISO, slotKeyFor } from '@/lib/booking';
+import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, businessNow, closedRangeFor, isSlotOpen, isValidDateISO, slotKeyFor } from '@/lib/booking';
 import { parseFormType } from '@/lib/formType';
 
 interface LeadData {
@@ -76,7 +76,10 @@ export async function POST(request: NextRequest) {
 
     // A window that is already running (or a weekend) is refused here too —
     // the browser can sit on the form long enough for its own check to go stale.
-    if (validBooking && !isSlotOpen(bookingDate, bookingSlot)) {
+    if (validBooking && closedRangeFor(bookingDate, formType)) {
+      return NextResponse.json({ error: 'slot_closed', reason: 'day_closed' }, { status: 409 });
+    }
+    if (validBooking && !isSlotOpen(bookingDate, bookingSlot, businessNow(), formType)) {
       return NextResponse.json({ error: 'slot_closed', reason: 'closed' }, { status: 409 });
     }
 
