@@ -98,8 +98,7 @@ export interface ClosedRange {
  * To close days add a range; to reopen remove it. Past ranges are harmless.
  */
 export const CLOSED_DATE_RANGES: readonly ClosedRange[] = [
-  // Taras 2026-11-06: gym online booking closed Mon Nov 30 – Fri Dec 4.
-  { from: '2026-11-30', to: '2026-12-04', label: 'Nov 30 – Dec 4', forms: ['gym'] },
+  // Taras 2026-11-07: Texas gym booking Nov 30 – Dec 4 reopened (closure was Denver-only).
 ];
 
 export const closedRangeFor = (
