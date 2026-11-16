@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Hero from '@/components/Hero';
+import ApplianceCards from '@/components/ApplianceCards';
 import Reviews from '@/components/Reviews';
 import SEOContent from '@/components/SEOContent';
 import BrandsSection from '@/components/BrandsSection';
@@ -71,25 +72,16 @@ export default async function CityPage({ params }: PageProps) {
       />
       
       {/* Appliances Section */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Appliances We Repair in {city.name}
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {appliances.map((appliance) => (
-              <Link
-                key={appliance.slug}
-                href={`/cities/${citySlug}/services/${appliance.slug}-repair`}
-                className="bg-gray-50 p-6 rounded-lg hover:shadow-lg transition text-center"
-              >
-                <h3 className="font-semibold text-gray-900">{appliance.name}</h3>
-                <p className="text-sm text-gray-600 mt-2">Repair in {city.name}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ApplianceCards
+        heading={`Appliances We Repair in ${city.name}`}
+        items={appliances.map((appliance) => ({
+          key: appliance.slug,
+          href: `/cities/${citySlug}/services/${appliance.slug}-repair`,
+          title: appliance.name,
+          note: `Repair in ${city.name}`,
+          image: appliance.image,
+        }))}
+      />
       
       {/* Brands Section */}
       <BrandsSection />

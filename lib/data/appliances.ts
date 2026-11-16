@@ -242,7 +242,7 @@ export const appliances = [
     name: 'Trash Compactor',
     title: 'Trash Compactor Repair',
     description: 'Trash compactor repair services in Fort Worth',
-    image: '/assets/appliances/refrigerator.jpg',
+    image: '/assets/appliances/trash-compactor.jpg',
     services: [
       'Won\'t turn on',
       'Ram not compacting',
