@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { CheckCircle, MapPin, Wrench, Zap } from 'lucide-react';
 import Hero from '@/components/Hero';
 import Reviews from '@/components/Reviews';
 import SEOContent from '@/components/SEOContent';
@@ -116,9 +117,6 @@ export default async function CityBrandPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* SEO Content */}
-      <SEOContent city={citySlug} brand={cleanBrandSlug} county={city.county} />
-
       {/* Why Choose Us Section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
@@ -128,28 +126,28 @@ export default async function CityBrandPage({ params }: PageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             <div className="text-center">
               <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🔧</span>
+                <Wrench className="w-8 h-8 text-orange-600" aria-hidden="true" />
               </div>
               <h3 className="font-semibold text-lg mb-2">{brand.name} Specialists</h3>
               <p className="text-gray-600">We service all {brand.name} appliance models</p>
             </div>
             <div className="text-center">
               <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">📍</span>
+                <MapPin className="w-8 h-8 text-orange-600" aria-hidden="true" />
               </div>
               <h3 className="font-semibold text-lg mb-2">Local to {city.name}</h3>
               <p className="text-gray-600">Fast response times in your area</p>
             </div>
             <div className="text-center">
               <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">✓</span>
+                <CheckCircle className="w-8 h-8 text-orange-600" aria-hidden="true" />
               </div>
               <h3 className="font-semibold text-lg mb-2">Parts Matched to Your Model</h3>
               <p className="text-gray-600">Sourced by your {brand.name} model number</p>
             </div>
             <div className="text-center">
               <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">⚡</span>
+                <Zap className="w-8 h-8 text-orange-600" aria-hidden="true" />
               </div>
               <h3 className="font-semibold text-lg mb-2">Same-Day Service</h3>
               <p className="text-gray-600">Available for {city.name} residents</p>
@@ -181,8 +179,10 @@ export default async function CityBrandPage({ params }: PageProps) {
         </section>
       )}
 
-      {/* Reviews Section */}
       <Reviews />
+
+      {/* Long-form SEO text sits below reviews so the selling blocks come first */}
+      <SEOContent city={citySlug} brand={cleanBrandSlug} county={city.county} />
     </>
   );
 }

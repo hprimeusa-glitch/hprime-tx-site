@@ -91,9 +91,6 @@ export default async function CityPage({ params }: PageProps) {
         </div>
       </section>
       
-      {/* SEO Content */}
-      <SEOContent city={citySlug} county={city.county} />
-      
       {/* Brands Section */}
       <BrandsSection />
       
@@ -119,8 +116,10 @@ export default async function CityPage({ params }: PageProps) {
         </section>
       )}
       
-      {/* Reviews Section */}
       <Reviews />
+
+      {/* Long-form SEO text sits below reviews so the selling blocks come first */}
+      <SEOContent city={citySlug} county={city.county} />
     </>
   );
 }

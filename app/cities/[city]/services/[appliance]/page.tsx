@@ -72,7 +72,7 @@ export default async function CityApplianceRepairPage({ params }: PageProps) {
         applianceImage={appliance.image}
       />
       
-      <SEOContent city={citySlug} appliance={cleanApplianceSlug} county={city.county} />
+      <WhyChooseUs />
       
       <BrandsSection />
       
@@ -98,8 +98,10 @@ export default async function CityApplianceRepairPage({ params }: PageProps) {
         </section>
       )}
       
-      <WhyChooseUs />
       <Reviews />
+
+      {/* Long-form SEO text sits below reviews so the selling blocks come first */}
+      <SEOContent city={citySlug} appliance={cleanApplianceSlug} county={city.county} />
     </>
   );
 }

@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { Wrench, Clock, CheckCircle, Users } from 'lucide-react';
 import Hero from '@/components/Hero';
 import Reviews from '@/components/Reviews';
-import WhyChooseUs from "@/components/WhyChooseUs";
 import BrandsSection from "@/components/BrandsSection";
 import SEOContent from '@/components/SEOContent';
 import { brands } from '@/lib/data/brands';
@@ -123,13 +122,11 @@ export default async function BrandApplianceRepairPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* SEO Content */}
-      <SEOContent brand={cleanBrandSlug} appliance={cleanApplianceSlug} />
-
-      {/* Reviews Section */}
-      <WhyChooseUs />
       <BrandsSection />
       <Reviews />
+
+      {/* Long-form SEO text sits below reviews so the selling blocks come first */}
+      <SEOContent brand={cleanBrandSlug} appliance={cleanApplianceSlug} />
     </>
   );
 }

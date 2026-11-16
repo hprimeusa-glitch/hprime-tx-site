@@ -153,11 +153,10 @@ export default async function BrandRepairPage({ params }: PageProps) {
         </div>
       </section>
       
-      {/* SEO Content */}
-      <SEOContent brand={cleanSlug} />
-      
-      {/* Reviews Section */}
       <Reviews />
+
+      {/* Long-form SEO text sits below reviews so the selling blocks come first */}
+      <SEOContent brand={cleanSlug} />
     </>
   );
 }
