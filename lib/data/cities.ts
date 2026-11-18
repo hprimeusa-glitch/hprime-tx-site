@@ -2,7 +2,8 @@
 //
 // ZIP codes mirror the Google Ads geo targeting one for one: DFW = campaign
 // 24095002203 (89 ZIPs, expanded 2026-09-21 from the list the client sent on
-// 2026-09-17), Houston = the Houston campaign (27 ZIPs, same list).
+// 2026-09-17), Houston = the Houston campaign (96 ZIPs since 2026-11-18, from the
+// list the client sent that day).
 // Only ZIPs with a live Google geo target constant are listed: PO-box-only and
 // REMOVAL_PLANNED codes (76004, 76124, 76161 and 41 others) carry no residents.
 //
@@ -61,10 +62,16 @@ export const cities: City[] = [
   { slug: 'burleson', name: 'Burleson', county: 'johnson', indexed: false, zipCodes: ['76028'] },
 
   // --- Harris County, Houston market (2026-09-21, not indexed yet) ---
-  // Mirrors the Houston campaign's 27 ZIPs. 77046 (REMOVAL_PLANNED) and 77402
-  // (PO box, no geo target constant) from the client's list are left out.
+  // Mirrors the Houston campaign's 96 ZIPs (expanded 2026-11-18 from 27). From the
+  // client's 181-ZIP list, 83 PO-box codes without a geo target constant and three
+  // REMOVAL_PLANNED codes (77046, 77266, 77501) are left out.
   // 77005 stays Houston: West University Place holds only 51% of it.
-  { slug: 'houston', name: 'Houston', county: 'harris', indexed: false, zipCodes: ['77002', '77005', '77006', '77007', '77008', '77018', '77019', '77024', '77027', '77031', '77035', '77036', '77040', '77042', '77043', '77055', '77056', '77057', '77063', '77071', '77074', '77080', '77081', '77092', '77096', '77098'] },
+  // Suburbs added 2026-11-18 have no page of their own and share the Houston page
+  // (the middleware sends their visitors here): Pasadena 77502-77506, South Houston
+  // 77587, Deer Park 77536, La Porte 77571, Galena Park 77547, Channelview 77530,
+  // Baytown 77520 77521 77523, Highlands 77562, Crosby 77532, Huffman 77336,
+  // Humble and Kingwood 77338 77339 77345 77346 77396, Porter 77365.
+  { slug: 'houston', name: 'Houston', county: 'harris', indexed: false, zipCodes: ['77002', '77003', '77004', '77005', '77006', '77007', '77008', '77009', '77010', '77011', '77012', '77013', '77015', '77016', '77017', '77018', '77019', '77020', '77021', '77022', '77023', '77024', '77025', '77026', '77027', '77028', '77029', '77030', '77031', '77032', '77033', '77035', '77036', '77037', '77038', '77039', '77040', '77042', '77043', '77044', '77045', '77047', '77048', '77049', '77050', '77051', '77054', '77055', '77056', '77057', '77060', '77061', '77063', '77067', '77071', '77073', '77074', '77075', '77076', '77078', '77080', '77081', '77085', '77086', '77087', '77088', '77091', '77092', '77093', '77096', '77098', '77201', '77204', '77336', '77338', '77339', '77345', '77346', '77365', '77396', '77502', '77503', '77504', '77505', '77506', '77520', '77521', '77523', '77530', '77532', '77536', '77547', '77562', '77571', '77587'] },
   { slug: 'bellaire', name: 'Bellaire', county: 'harris', indexed: false, zipCodes: ['77401'] },
 ];
 

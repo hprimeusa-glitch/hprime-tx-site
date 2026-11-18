@@ -70,6 +70,23 @@ const CITY_NAME_TO_SLUG: Record<string, string> = {
   'Spring Valley Village': 'houston',
   'Hilshire Village': 'houston',
   'Jersey Village': 'houston',
+  // Houston suburbs in the campaign ZIPs since 2026-11-18 (no own page yet)
+  'Pasadena': 'houston',
+  'South Houston': 'houston',
+  'Deer Park': 'houston',
+  'La Porte': 'houston',
+  'Galena Park': 'houston',
+  'Jacinto City': 'houston',
+  'Channelview': 'houston',
+  'Baytown': 'houston',
+  'Highlands': 'houston',
+  'Crosby': 'houston',
+  'Huffman': 'houston',
+  'Humble': 'houston',
+  'Atascocita': 'houston',
+  'Kingwood': 'houston',
+  'Porter': 'houston',
+  'Aldine': 'houston',
 };
 
 // An unknown or missing city falls back to the nearer market. Houston sits
