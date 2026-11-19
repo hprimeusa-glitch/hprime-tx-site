@@ -9,6 +9,11 @@
 // is already running. It also closes once MAX_BOOKINGS_PER_SLOT leads have
 // been submitted for it (phone bookings are not counted).
 
+import { cities } from '@/lib/data/cities';
+import { counties, type Market } from '@/lib/data/counties';
+
+export type { Market };
+
 export const BUSINESS_TZ = 'America/Chicago';
 
 export interface TimeSlotDef {
@@ -67,12 +72,11 @@ export function businessNow(now: Date = new Date()): BusinessNow {
 
 export const isValidDateISO = (dateISO: string): boolean => /^\d{4}-\d{2}-\d{2}$/.test(dateISO);
 
-/** Texas books Monday–Friday only. Built in UTC so the weekday never shifts. */
-export const isWeekendISO = (dateISO: string): boolean => {
+/** Day of the week, 0 = Sunday … 6 = Saturday. Built in UTC so the weekday never shifts. */
+export const weekdayISO = (dateISO: string): number | null => {
+  if (!isValidDateISO(dateISO)) return null;
   const [y, m, d] = dateISO.split('-').map(Number);
-  if (!y || !m || !d) return false;
-  const day = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-  return day === 0 || day === 6;
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
 };
 
 export const addDaysISO = (dateISO: string, days: number): string => {
@@ -81,6 +85,61 @@ export const addDaysISO = (dateISO: string, days: number): string => {
 };
 
 export type BookingForm = 'appliance' | 'gym';
+
+// Houston = every ZIP on a Houston-market city page (lib/data/cities.ts) plus any
+// other 77xxx code (Greater Houston). Dallas-Fort Worth ZIPs are all 75xxx/76xxx.
+const HOUSTON_ZIPS = new Set(
+  cities
+    .filter((city) => counties.find((county) => county.slug === city.county)?.market === 'houston')
+    .flatMap((city) => city.zipCodes ?? [])
+);
+
+/**
+ * Which market a customer's ZIP belongs to. A missing, partial or unknown ZIP
+ * counts as Dallas-Fort Worth: the site is DFW-first, and the ZIP field sits
+ * right above the date, so a Houston customer is recognised before submitting.
+ */
+export function marketForZip(zip: string | null | undefined): Market {
+  const digits = String(zip ?? '').replace(/\D/g, '');
+  if (digits.length !== 5) return 'dfw';
+  return HOUSTON_ZIPS.has(digits) || digits.startsWith('77') ? 'houston' : 'dfw';
+}
+
+/**
+ * Online booking days (Taras 2026-11-19). Sunday is closed everywhere.
+ * Saturday is open for the gym form (gym is Dallas-Fort Worth only) and for
+ * appliance customers in Dallas-Fort Worth; Houston appliance visits stay
+ * Monday to Friday.
+ */
+export function isBookingDay(
+  dateISO: string,
+  formType: BookingForm = 'appliance',
+  market: Market = 'dfw'
+): boolean {
+  const day = weekdayISO(dateISO);
+  if (day === null || day === 0) return false;
+  if (day === 6) return formType === 'gym' || market !== 'houston';
+  return true;
+}
+
+/** Customer-facing reason a date has no online booking at all, or null if it is a booking day. */
+export function dayOffMessage(
+  dateISO: string,
+  formType: BookingForm = 'appliance',
+  market: Market = 'dfw'
+): string | null {
+  if (!isValidDateISO(dateISO) || isBookingDay(dateISO, formType, market)) return null;
+  return weekdayISO(dateISO) === 6
+    ? 'Houston visits are booked Monday to Friday. Please choose a weekday, or call us.'
+    : 'We do not book online on Sundays. Please choose another day, or call us.';
+}
+
+/** The booking days line shown under the date field. */
+export function bookingDaysHint(formType: BookingForm = 'appliance', market: Market = 'dfw'): string {
+  if (formType === 'gym') return 'We book Monday to Saturday, 8 AM to 5 PM.';
+  if (market === 'houston') return 'Houston: we book Monday to Friday, 8 AM to 5 PM.';
+  return 'Monday to Saturday, 8 AM to 5 PM. Houston: Monday to Friday.';
+}
 
 export interface ClosedRange {
   /** first closed day, YYYY-MM-DD in BUSINESS_TZ */
@@ -124,11 +183,12 @@ export function isSlotOpen(
   dateISO: string,
   slotLabel: string,
   now: BusinessNow = businessNow(),
-  formType: BookingForm = 'appliance'
+  formType: BookingForm = 'appliance',
+  market: Market = 'dfw'
 ): boolean {
   const slot = TIME_SLOT_DEFS.find((def) => def.label === slotLabel);
   if (!slot) return false;
-  if (!isValidDateISO(dateISO) || isWeekendISO(dateISO)) return false;
+  if (!isValidDateISO(dateISO) || !isBookingDay(dateISO, formType, market)) return false;
   if (closedRangeFor(dateISO, formType)) return false;
   if (dateISO < now.date) return false;
   if (dateISO > now.date) return true;
@@ -138,20 +198,22 @@ export function isSlotOpen(
 export const hasOpenSlots = (
   dateISO: string,
   now: BusinessNow = businessNow(),
-  formType: BookingForm = 'appliance'
-): boolean => TIME_SLOT_DEFS.some((slot) => isSlotOpen(dateISO, slot.label, now, formType));
+  formType: BookingForm = 'appliance',
+  market: Market = 'dfw'
+): boolean => TIME_SLOT_DEFS.some((slot) => isSlotOpen(dateISO, slot.label, now, formType, market));
 
 /**
  * Earliest date still worth offering: today while a window is open, otherwise
- * the next weekday. Used as the `min` of the date picker.
+ * the next booking day. Used as the `min` of the date picker.
  */
 export function firstBookableDate(
   now: BusinessNow = businessNow(),
-  formType: BookingForm = 'appliance'
+  formType: BookingForm = 'appliance',
+  market: Market = 'dfw'
 ): string {
   let date = now.date;
   for (let i = 0; i < 30; i += 1) {
-    if (hasOpenSlots(date, now, formType)) return date;
+    if (hasOpenSlots(date, now, formType, market)) return date;
     date = addDaysISO(date, 1);
   }
   return date;

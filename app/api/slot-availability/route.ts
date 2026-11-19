@@ -9,6 +9,7 @@ import {
   firstBookableDate,
   isSlotOpen,
   isValidDateISO,
+  marketForZip,
   slotLabelFromKey,
   upcomingClosures,
 } from '@/lib/booking';
@@ -20,7 +21,10 @@ export async function GET(request: NextRequest) {
   const now = businessNow();
   // ?form=gym reads the gym counter; anything else reads the appliance counter.
   const formType = parseFormType(request.nextUrl.searchParams.get('form'));
-  const minDate = firstBookableDate(now, formType);
+  // ?zip= picks the market: Houston appliance visits are Monday to Friday, Dallas-Fort
+  // Worth books Saturdays too. No zip = Dallas-Fort Worth.
+  const market = marketForZip(request.nextUrl.searchParams.get('zip'));
+  const minDate = firstBookableDate(now, formType, market);
 
   // No date yet: the form only needs the earliest day it may offer.
   const requested = request.nextUrl.searchParams.get('date');
@@ -33,7 +37,7 @@ export async function GET(request: NextRequest) {
   // counter says.
   const status: Record<string, SlotStatus> = {};
   for (const slot of TIME_SLOT_DEFS) {
-    status[slot.label] = isSlotOpen(date, slot.label, now, formType) ? 'open' : 'closed';
+    status[slot.label] = isSlotOpen(date, slot.label, now, formType, market) ? 'open' : 'closed';
   }
 
   try {
@@ -60,6 +64,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     date,
     today: now.date,
+    market,
     minDate,
     status,
     dayClosed: closedRangeFor(date, formType)?.label ?? null,

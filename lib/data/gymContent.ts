@@ -22,7 +22,7 @@ export const gymProcess = [
   },
   {
     title: 'Pick a time window',
-    text: 'Choose a weekday window that works for you. A technician comes to your home or facility.',
+    text: 'Choose a window from Monday to Saturday that works for you. A technician comes to your home or facility.',
   },
   {
     title: 'Diagnosis and upfront quote',

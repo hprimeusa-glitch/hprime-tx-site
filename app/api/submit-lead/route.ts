@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
-import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, businessNow, closedRangeFor, isSlotOpen, isValidDateISO, slotKeyFor } from '@/lib/booking';
+import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, businessNow, closedRangeFor, isBookingDay, isSlotOpen, isValidDateISO, marketForZip, slotKeyFor } from '@/lib/booking';
 import { parseFormType } from '@/lib/formType';
 
 interface LeadData {
@@ -74,12 +74,17 @@ export async function POST(request: NextRequest) {
     const validBooking =
       isValidDateISO(bookingDate) && TIME_SLOTS.includes(bookingSlot);
 
-    // A window that is already running (or a weekend) is refused here too —
-    // the browser can sit on the form long enough for its own check to go stale.
-    if (validBooking && closedRangeFor(bookingDate, formType)) {
+    // A window that is already running, or a day with no online booking (Sunday;
+    // Saturday for a Houston appliance ZIP), is refused here too: the browser can
+    // sit on the form long enough for its own check to go stale.
+    const market = marketForZip(data.zipCode);
+    if (
+      validBooking &&
+      (closedRangeFor(bookingDate, formType) || !isBookingDay(bookingDate, formType, market))
+    ) {
       return NextResponse.json({ error: 'slot_closed', reason: 'day_closed' }, { status: 409 });
     }
-    if (validBooking && !isSlotOpen(bookingDate, bookingSlot, businessNow(), formType)) {
+    if (validBooking && !isSlotOpen(bookingDate, bookingSlot, businessNow(), formType, market)) {
       return NextResponse.json({ error: 'slot_closed', reason: 'closed' }, { status: 409 });
     }
 

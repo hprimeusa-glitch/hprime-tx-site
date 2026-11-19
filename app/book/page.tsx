@@ -61,7 +61,7 @@ export default function BookPage() {
             className="text-xs font-semibold uppercase tracking-wider"
             style={{ color: '#FFC704' }}
           >
-            Fort Worth Metro · Monday–Friday
+            Fort Worth Metro · Monday to Saturday
           </p>
           <h1 className="mt-3 text-3xl font-bold text-white md:text-4xl">
             Book Appliance Repair Online
@@ -134,8 +134,9 @@ export default function BookPage() {
                 ))}
               </ul>
               <p className="mt-3 text-xs text-gray-500">
-                Online booking is available Monday through Friday. Need a weekend or an
-                after-hours visit? Call {PHONE_DISPLAY} and we will fit you in.
+                Online booking is available Monday through Saturday in Dallas-Fort Worth and
+                Monday through Friday in Houston. Need another day or an after-hours visit?
+                Call {PHONE_DISPLAY} and we will fit you in.
               </p>
             </div>
 

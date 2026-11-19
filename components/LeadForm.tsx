@@ -6,7 +6,17 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PatternFormat } from 'react-number-format';
-import { SlotStatus, TIME_SLOT_DEFS, businessNow, closedRangeFor, isSlotOpen, isWeekendISO } from '@/lib/booking';
+import {
+  SlotStatus,
+  TIME_SLOT_DEFS,
+  bookingDaysHint,
+  businessNow,
+  closedRangeFor,
+  dayOffMessage,
+  isBookingDay,
+  isSlotOpen,
+  marketForZip,
+} from '@/lib/booking';
 import { FormType, LEAD_EVENTS } from '@/lib/formType';
 
 // The free-text field is the only visible difference between the two forms.
@@ -22,9 +32,12 @@ const ISSUE_FIELD: Record<FormType, { label: string; placeholder: string }> = {
   },
 };
 
-// Texas books Monday–Friday only. A native <input type="date"> can't grey out weekends,
-// so we reject Sat/Sun in validation and show a hint. Dates are judged in the shop's
-// timezone, not the visitor's, so a customer two timezones away sees the same day.
+// Booking days (lib/booking isBookingDay): Monday to Saturday in Dallas-Fort Worth and
+// for the gym form, Monday to Friday for a Houston appliance ZIP, never Sunday. A native
+// <input type="date"> can't grey out days, so we reject them in validation and show a
+// hint. Sunday is refused on the date field itself; Saturday depends on the ZIP, so the
+// date + ZIP pair is checked at submit. Dates are judged in the shop's timezone, not the
+// visitor's, so a customer two timezones away sees the same day.
 // Closed days (lib/booking CLOSED_DATE_RANGES) differ per form, hence a schema per form type.
 const makeFormSchema = (formType: FormType) => z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -42,14 +55,24 @@ const makeFormSchema = (formType: FormType) => z.object({
   preferredDate: z
     .string()
     .min(1, 'Please select a preferred date')
-    .refine((val) => !isWeekendISO(val), {
-      message: "We're open Monday through Friday — please choose a weekday.",
+    .refine((val) => isBookingDay(val, formType), {
+      message: 'We do not book online on Sundays. Please choose another day, or call us.',
     })
     .refine((val) => val >= businessNow().date, {
       message: 'Please choose today or a later date.',
     }),
   preferredTimeSlot: z.string().min(1, 'Please select a time slot'),
 }).superRefine((data, ctx) => {
+  const market = marketForZip(data.zipCode);
+  const dayOff = data.preferredDate ? dayOffMessage(data.preferredDate, formType, market) : null;
+  if (dayOff) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['preferredDate'],
+      message: dayOff,
+    });
+    return;
+  }
   const closed = data.preferredDate ? closedRangeFor(data.preferredDate, formType) : null;
   if (closed) {
     ctx.addIssue({
@@ -59,7 +82,7 @@ const makeFormSchema = (formType: FormType) => z.object({
     });
     return;
   }
-  if (data.preferredDate && data.preferredTimeSlot && !isSlotOpen(data.preferredDate, data.preferredTimeSlot, businessNow(), formType)) {
+  if (data.preferredDate && data.preferredTimeSlot && !isSlotOpen(data.preferredDate, data.preferredTimeSlot, businessNow(), formType, market)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['preferredTimeSlot'],
@@ -90,7 +113,7 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
   const [closures, setClosures] = useState<string[]>([]);
   const formSchema = useMemo(() => makeFormSchema(formType), [formType]);
   // The earliest day still worth offering, from the server: today while a window is
-  // open, the next weekday once they have all started. Empty until it loads, so a
+  // open, the next booking day once they have all started. Empty until it loads, so a
   // statically cached page never ships a stale date.
   const [minDate, setMinDate] = useState<string>('');
   const [availabilityRefresh, setAvailabilityRefresh] = useState(0);
@@ -109,6 +132,12 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
   });
 
   const selectedDate = watch('preferredDate');
+  // The ZIP decides the market (Houston appliance = Monday to Friday). Only a complete
+  // ZIP is sent, so typing does not refetch on every digit.
+  const zipDigits = String(watch('zipCode') ?? '').replace(/\D/g, '');
+  const bookingZip = zipDigits.length === 5 ? zipDigits : '';
+  const market = marketForZip(bookingZip);
+  const dayOff = selectedDate ? dayOffMessage(selectedDate, formType, market) : null;
 
   useEffect(() => {
     const hasDate = Boolean(selectedDate) && /^\d{4}-\d{2}-\d{2}$/.test(selectedDate);
@@ -116,6 +145,7 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
     const query = new URLSearchParams();
     if (hasDate) query.set('date', selectedDate);
     if (isGym) query.set('form', 'gym');
+    if (bookingZip) query.set('zip', bookingZip);
     const qs = query.toString();
     fetch(qs ? `/api/slot-availability?${qs}` : '/api/slot-availability')
       .then((res) => (res.ok ? res.json() : null))
@@ -132,7 +162,7 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
     return () => {
       cancelled = true;
     };
-  }, [selectedDate, availabilityRefresh, isGym]);
+  }, [selectedDate, availabilityRefresh, isGym, bookingZip]);
 
   const goToStep2 = async () => {
     const valid = await trigger(STEP_1_FIELDS);
@@ -360,7 +390,7 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
             min={minDate || undefined}
             className={inputCls}
           />
-          <p className="text-gray-500 text-xs mt-0.5">We book Monday–Friday, 8 AM – 5 PM.</p>
+          <p className="text-gray-500 text-xs mt-0.5">{bookingDaysHint(formType, market)}</p>
           {closures.map((label) => (
             <p key={label} className="text-amber-600 text-xs mt-0.5">No online booking {label}.</p>
           ))}
@@ -381,7 +411,7 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
                 status === 'full'
                   ? ' — fully booked'
                   : status === 'closed'
-                    ? dayClosed
+                    ? dayClosed || dayOff
                       ? ' — closed'
                       : ' — too late today'
                     : '';
@@ -393,11 +423,13 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
             })}
           </select>
           {errors.preferredTimeSlot && <p className={errorCls}>{errors.preferredTimeSlot.message}</p>}
-          {noSlotsLeft && (
+          {noSlotsLeft && !(dayOff && errors.preferredDate) && (
             <p className="text-gray-500 text-xs mt-0.5">
               {dayClosed
                 ? `Online booking is closed ${dayClosed} — pick another day, or call us.`
-                : 'Nothing left for this day — pick the next one, or call us.'}
+                : dayOff
+                  ? dayOff
+                  : 'Nothing left for this day — pick the next one, or call us.'}
             </p>
           )}
         </div>
