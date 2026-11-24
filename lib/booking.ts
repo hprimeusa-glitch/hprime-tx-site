@@ -158,6 +158,8 @@ export interface ClosedRange {
  */
 export const CLOSED_DATE_RANGES: readonly ClosedRange[] = [
   // Taras 2026-11-07: Texas gym booking Nov 30 – Dec 4 reopened (closure was Denver-only).
+  // Taras 2026-11-23: Thanksgiving, technicians off Thu Nov 26 – Sat Nov 28 (ads paused the same days).
+  { from: '2026-11-26', to: '2026-11-28', label: 'Nov 26–28', forms: ['appliance', 'gym'] },
 ];
 
 export const closedRangeFor = (
