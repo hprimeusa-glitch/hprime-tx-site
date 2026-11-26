@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
 import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, businessNow, closedRangeFor, isBookingDay, isSlotOpen, isValidDateISO, marketForZip, slotKeyFor } from '@/lib/booking';
 import { parseFormType } from '@/lib/formType';
+import { abTrackServer } from '@/lib/ab/server';
 
 interface LeadData {
   name: string;
   firstName?: string;
   lastName?: string;
   phone: string;
-  email: string;
+  /** Optional since 2026-11-26 (A/B variant B of hprime-tx-form-short asks it as optional) */
+  email?: string;
   street?: string;
   apartment?: string;
   city?: string;
@@ -49,7 +51,7 @@ export async function POST(request: NextRequest) {
     const formType = parseFormType(data.formType);
     const isGym = formType === 'gym';
 
-    if (!data.name || !data.phone || !data.email) {
+    if (!data.name || !data.phone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -143,8 +145,10 @@ export async function POST(request: NextRequest) {
       '',
       `👤 <b>Name:</b> ${escapeHtml(data.name)}`,
       `📞 <b>Phone:</b> <a href="tel:+1${phoneDigits}">${escapeHtml(phoneFormatted)}</a>`,
-      `📧 <b>Email:</b> ${escapeHtml(data.email)}`,
     ];
+    if (data.email) {
+      lines.push(`📧 <b>Email:</b> ${escapeHtml(data.email)}`);
+    }
     if (addressLine) {
       lines.push(`📍 <b>Address:</b> ${escapeHtml(addressLine)}`);
     }
@@ -244,6 +248,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // A/B conversion, only after the lead reached Telegram. Never throws, max 1.5 s.
+    await abTrackServer(request, 'lead', { form: formType });
 
     return NextResponse.json({
       success: true,

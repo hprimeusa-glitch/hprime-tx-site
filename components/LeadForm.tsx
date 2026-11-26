@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +18,15 @@ import {
   marketForZip,
 } from '@/lib/booking';
 import { FormType, LEAD_EVENTS } from '@/lib/formType';
+import { appliances } from '@/lib/data/appliances';
+import { AbExposure, abTrack, useVariant } from '@/lib/ab/client';
+
+// A/B test hprime-tx-form-short (lib/ab/config.ts, appliance form only):
+//  A = step 1 first name, last name, phone, email, issue (all required), step 2 address + booking.
+//  B = step 1 only name, phone and appliance; step 2 keeps everything the dispatcher gets today
+//      (address, ZIP, date, window) plus email and brand/problem, both optional.
+const FORM_TEST_ID = 'hprime-tx-form-short';
+const APPLIANCE_OPTIONS = [...appliances.map((a) => a.name), 'Other'];
 
 // The free-text field is the only visible difference between the two forms.
 // Its value is sent as `appliance` in both cases; the API reads `formType`.
@@ -39,15 +48,19 @@ const ISSUE_FIELD: Record<FormType, { label: string; placeholder: string }> = {
 // date + ZIP pair is checked at submit. Dates are judged in the shop's timezone, not the
 // visitor's, so a customer two timezones away sees the same day.
 // Closed days (lib/booking CLOSED_DATE_RANGES) differ per form, hence a schema per form type.
-const makeFormSchema = (formType: FormType) => z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+const makeFormSchema = (formType: FormType, short: boolean) => z.object({
+  firstName: short ? z.string().optional() : z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: short ? z.string().optional() : z.string().min(2, 'Last name must be at least 2 characters'),
+  fullName: short ? z.string().trim().min(2, 'Please enter your name') : z.string().optional(),
+  applianceType: short ? z.string().min(1, 'Please choose the appliance') : z.string().optional(),
   phone: z
     .string()
     .min(10, 'Please enter a valid phone number')
     .refine((val) => val.replace(/\D/g, '').length === 10, 'Please enter a complete 10-digit phone number'),
-  email: z.string().email('Please enter a valid email'),
-  message: z.string().min(5, 'Please describe the issue (minimum 5 characters)'),
+  email: short
+    ? z.union([z.literal(''), z.string().trim().email('Please enter a valid email')]).optional()
+    : z.string().email('Please enter a valid email'),
+  message: short ? z.string().optional() : z.string().min(5, 'Please describe the issue (minimum 5 characters)'),
   street: z.string().min(3, 'Street address is required'),
   apartment: z.string().optional(),
   city: z.string().min(2, 'City is required'),
@@ -94,6 +107,7 @@ const makeFormSchema = (formType: FormType) => z.object({
 type FormData = z.infer<ReturnType<typeof makeFormSchema>>;
 
 const STEP_1_FIELDS: Array<keyof FormData> = ['firstName', 'lastName', 'phone', 'email', 'message'];
+const STEP_1_FIELDS_SHORT: Array<keyof FormData> = ['fullName', 'phone', 'applianceType'];
 
 interface LeadFormProps {
   variant?: 'section' | 'modal';
@@ -111,7 +125,17 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
   // From the server: the closure covering the picked date, and closures still ahead.
   const [dayClosed, setDayClosed] = useState<string | null>(null);
   const [closures, setClosures] = useState<string[]>([]);
-  const formSchema = useMemo(() => makeFormSchema(formType), [formType]);
+  // Variant is null until mounted (control meanwhile); the modal mounts on click, so no flash.
+  const formVariant = useVariant(FORM_TEST_ID);
+  const short = !isGym && formVariant === 'B';
+  const formSchema = useMemo(() => makeFormSchema(formType, short), [formType, short]);
+  // The resolver reads the current schema, so a variant resolved after mount is honoured.
+  const schemaRef = useRef(formSchema);
+  schemaRef.current = formSchema;
+  const startedRef = useRef(false);
+  useEffect(() => {
+    abTrack('form_open');
+  }, []);
   // The earliest day still worth offering, from the server: today while a window is
   // open, the next booking day once they have all started. Empty until it loads, so a
   // statically cached page never ships a stale date.
@@ -127,7 +151,7 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
     trigger,
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: (values, context, options) => zodResolver(schemaRef.current)(values, context, options),
     mode: 'onTouched',
   });
 
@@ -165,7 +189,7 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
   }, [selectedDate, availabilityRefresh, isGym, bookingZip]);
 
   const goToStep2 = async () => {
-    const valid = await trigger(STEP_1_FIELDS);
+    const valid = await trigger(short ? STEP_1_FIELDS_SHORT : STEP_1_FIELDS);
     if (valid) setStep(2);
   };
 
@@ -179,6 +203,16 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
       const cleanedPhone = data.phone.replace(/\D/g, '');
       const cleanText = (text: string) =>
         text.replace(/["']/g, '').replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+      // Variant B asks one name field; split it so the API and enhanced conversions keep
+      // first/last name. Email and the issue text are optional there.
+      const nameParts = short ? cleanText(data.fullName || '').split(' ') : [];
+      const firstName = short ? nameParts[0] || '' : data.firstName || '';
+      const lastName = short ? nameParts.slice(1).join(' ') : data.lastName || '';
+      const email = (data.email || '').trim();
+      const issue = cleanText(data.message || '');
+      const applianceText = short
+        ? [data.applianceType, issue].filter(Boolean).join(': ')
+        : issue;
 
       let attribution: Record<string, string> = {};
       try {
@@ -192,16 +226,16 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: `${data.firstName} ${data.lastName}`,
-          firstName: data.firstName,
-          lastName: data.lastName,
+          name: `${firstName} ${lastName}`.trim(),
+          firstName,
+          lastName,
           phone: cleanedPhone,
-          email: data.email,
+          email,
           street: cleanText(data.street),
           apartment: cleanText(data.apartment || ''),
           city: cleanText(data.city),
           zipCode: data.zipCode,
-          appliance: cleanText(data.message),
+          appliance: applianceText,
           preferredDate: data.preferredDate,
           preferredTimeSlot: data.preferredTimeSlot,
           ...(isGym && { formType: 'gym' }),
@@ -216,10 +250,10 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
             event: LEAD_EVENTS[formType].submitted,
             form_type: formType,
             enhanced_conversions: {
-              email: data.email,
+              ...(email && { email }),
               phone_number: `+1${cleanedPhone}`,
-              first_name: data.firstName,
-              last_name: data.lastName,
+              first_name: firstName,
+              ...(lastName && { last_name: lastName }),
               street: data.street,
               city: data.city,
               region: 'TX',
@@ -276,7 +310,7 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
   );
 
   const step1 = (
-    <div className="space-y-3">
+    <div key="step1" className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label htmlFor="firstName" className={labelCls}>First name *</label>
@@ -339,8 +373,81 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
     </div>
   );
 
+  // Distinct keys: without them React reuses step 1's name input as step 2's street input
+  // (same tree position) and the typed name shows up as the street address.
+  const step1Short = (
+    <div key="step1-short" className="space-y-3">
+      <div>
+        <label htmlFor="fullName" className={labelCls}>Your name *</label>
+        <input {...register('fullName')} type="text" id="fullName" className={inputCls} placeholder="John Smith" autoComplete="name" />
+        {errors.fullName && <p className={errorCls}>{errors.fullName.message}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="phone" className={labelCls}>Phone *</label>
+        <Controller
+          name="phone"
+          control={control}
+          render={({ field }) => (
+            <PatternFormat
+              {...field}
+              format="(###) ###-####"
+              mask="_"
+              placeholder="(817) 555-0123"
+              className={inputCls}
+              type="tel"
+              id="phone"
+              autoComplete="tel"
+            />
+          )}
+        />
+        {errors.phone && <p className={errorCls}>{errors.phone.message}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="applianceType" className={labelCls}>What needs repair? *</label>
+        <select {...register('applianceType')} id="applianceType" className={inputCls} defaultValue="">
+          <option value="" disabled>Choose the appliance…</option>
+          {APPLIANCE_OPTIONS.map((name) => (
+            <option key={name} value={name}>{name}</option>
+          ))}
+        </select>
+        {errors.applianceType && <p className={errorCls}>{errors.applianceType.message}</p>}
+      </div>
+
+      <button
+        type="button"
+        onClick={goToStep2}
+        className="w-full text-white py-3 rounded-lg transition font-semibold text-base shadow-lg hover:shadow-xl"
+        style={{ backgroundColor: '#1B2A4A' }}
+      >
+        Continue →
+      </button>
+    </div>
+  );
+
+  const step2Optional = short && (
+    <>
+      <div>
+        <label htmlFor="message" className={labelCls}>Brand and problem (optional)</label>
+        <textarea
+          {...register('message')}
+          id="message"
+          rows={2}
+          className={inputCls}
+          placeholder="Samsung, not cooling"
+        />
+      </div>
+      <div>
+        <label htmlFor="email" className={labelCls}>E-mail (optional)</label>
+        <input {...register('email')} type="email" id="email" className={inputCls} placeholder="john@example.com" autoComplete="email" inputMode="email" />
+        {errors.email && <p className={errorCls}>{errors.email.message}</p>}
+      </div>
+    </>
+  );
+
   const step2 = (
-    <div className="space-y-3">
+    <div key="step2" className="space-y-3">
       <div>
         <label htmlFor="street" className={labelCls}>Street address *</label>
         <input {...register('street')} type="text" id="street" className={inputCls} placeholder="123 Main Street" autoComplete="address-line1" />
@@ -435,6 +542,8 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
         </div>
       </div>
 
+      {step2Optional}
+
       <div className="grid grid-cols-3 gap-3 pt-1">
         <button
           type="button"
@@ -481,9 +590,19 @@ export default function LeadForm({ variant = 'section', formType = 'appliance', 
   );
 
   const formContent = (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      onInputCapture={() => {
+        if (startedRef.current) return;
+        startedRef.current = true;
+        abTrack('form_start');
+      }}
+    >
+      {/* Exposure = this visitor opened the appliance form (the tested element). */}
+      {!isGym && <AbExposure id={FORM_TEST_ID} rendered={formVariant} />}
       {stepIndicator}
-      {step === 1 ? step1 : step2}
+      {step === 1 ? (short ? step1Short : step1) : step2}
     </form>
   );
 

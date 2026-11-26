@@ -4,13 +4,20 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { geolocation } from '@vercel/edge';
+import { abApply, abPrepare } from '@/lib/ab/middleware';
 
+// Every page runs through here so the A/B cookie (lib/ab) exists on the first request.
+// The geo rewrite keeps its original scope: isGeoPath below = the old matcher.
 export const config = {
   matcher: [
-    '/services/:path*',
-    '/brands/:path*',
+    '/((?!api/|_next/|keystatic|favicon\\.ico|.*\\.(?:png|jpe?g|gif|webp|avif|svg|ico|txt|xml|json|js|css|map|woff2?|ttf|mp4|webm|pdf)$).*)',
   ],
 };
+
+// Paths the geo rewrite ever applied to (the matcher before 2026-11-26).
+const isGeoPath = (pathname: string): boolean =>
+  pathname === '/services' || pathname.startsWith('/services/') ||
+  pathname === '/brands' || pathname.startsWith('/brands/');
 
 // ============================================
 // CITY MAPPING (Texas: west Dallas-Fort Worth + Houston)
@@ -97,6 +104,15 @@ function fallbackCitySlug(latitude?: string): string {
 }
 
 export function middleware(request: NextRequest) {
+  const prep = abPrepare(request);
+  const init = { request: { headers: prep.requestHeaders } };
+  const res = isGeoPath(request.nextUrl.pathname) ? geoMiddleware(request, init) : NextResponse.next(init);
+  return abApply(res, prep);
+}
+
+type AbInit = { request: { headers: Headers } };
+
+function geoMiddleware(request: NextRequest, init: AbInit): NextResponse {
   const { pathname, searchParams } = request.nextUrl;
 
   const utmSource = searchParams.get('utm_source');
@@ -104,7 +120,7 @@ export function middleware(request: NextRequest) {
 
   // If NOT ad traffic → pass through
   if (utmSource !== 'google' || utmMedium !== 'cpc') {
-    return NextResponse.next();
+    return NextResponse.next(init);
   }
 
   const geo = geolocation(request);
@@ -126,10 +142,10 @@ export function middleware(request: NextRequest) {
     if (pathname.match(/^\/services\/.+/)) {
       const servicePath = pathname.replace('/services/', '');
       url.pathname = `/cities/${fallback}/services/${servicePath}`;
-      return NextResponse.rewrite(url);
+      return NextResponse.rewrite(url, init);
     }
 
-    return NextResponse.next();
+    return NextResponse.next(init);
   }
 
   let citySlug = CITY_NAME_TO_SLUG[cityName];
@@ -168,7 +184,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (newPathname === pathname) {
-    return NextResponse.next();
+    return NextResponse.next(init);
   }
 
   const url = request.nextUrl.clone();
@@ -181,5 +197,5 @@ export function middleware(request: NextRequest) {
     slug: citySlug,
   });
 
-  return NextResponse.rewrite(url);
+  return NextResponse.rewrite(url, init);
 }

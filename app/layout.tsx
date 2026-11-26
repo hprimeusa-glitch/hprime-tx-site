@@ -6,6 +6,7 @@ import { ModalProvider } from '@/contexts/ModalContext';
 import LeadFormModalWrapper from '@/components/LeadFormModalWrapper';
 import UTMTracker from '@/components/UTMTracker';
 import { ChromeTop, ChromeBottom } from '@/components/SiteChrome';
+import { AbExposure, AbRuntime } from '@/lib/ab/client';
 import { generateOrganizationSchema, generateWebSiteSchema } from '@/lib/seo/schema';
 
 const inter = Inter({
@@ -78,6 +79,9 @@ export default function RootLayout({
           />
         </noscript>
         <UTMTracker />
+        <AbRuntime />
+        {/* A/A sanity experiment: every visitor is exposed once per page load */}
+        <AbExposure id="hprime-tx-aa-1" />
         <ModalProvider>
           <ChromeTop />
           <main>{children}</main>

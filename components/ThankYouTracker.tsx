@@ -3,11 +3,7 @@
 import { useEffect } from 'react';
 import { FormType, LEAD_EVENTS } from '@/lib/formType';
 
-declare global {
-  interface Window {
-    dataLayer: Record<string, unknown>[];
-  }
-}
+// window.dataLayer is declared globally in lib/ab/client.tsx.
 
 // Appliance leads push `thank_you` (unchanged); gym leads arrive with ?form=gym
 // and push `gym_thank_you`, so the appliance conversion trigger never fires on them.
