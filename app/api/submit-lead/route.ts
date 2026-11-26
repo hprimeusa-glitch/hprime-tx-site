@@ -3,6 +3,7 @@ import { getPool } from '@/lib/db';
 import { TIME_SLOTS, MAX_BOOKINGS_PER_SLOT, businessNow, closedRangeFor, isBookingDay, isSlotOpen, isValidDateISO, marketForZip, slotKeyFor } from '@/lib/booking';
 import { parseFormType } from '@/lib/formType';
 import { abTrackServer } from '@/lib/ab/server';
+import { UID_COOKIE, assignments, isValidUid } from '@/lib/ab/core';
 
 interface LeadData {
   name: string;
@@ -225,6 +226,14 @@ export async function POST(request: NextRequest) {
     lines.push('');
     lines.push(`🌐 <b>Submitted from:</b> ${escapeHtml(data.submission_page || sourceUrl)}`);
     lines.push(`🕐 <b>Time:</b> ${escapeHtml(timestamp)} (Fort Worth)`);
+
+    // Site version this visitor saw (running A/B experiments), so jobs can be counted per
+    // variant from the Telegram group. Computed server-side from the ab_uid cookie.
+    const abUid = request.cookies.get(UID_COOKIE)?.value;
+    if (isValidUid(abUid)) {
+      const ab = Object.entries(assignments(abUid)).map(([id, v]) => `${id}=${v}`).join(', ');
+      if (ab) lines.push(`A/B: ${escapeHtml(ab)}`);
+    }
 
     const text = lines.join('\n');
 
